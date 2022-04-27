@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    
     public float horizontalInput;
     public float speed = 10.0f;
     public float xRange = 10.0f;
@@ -13,10 +14,12 @@ public class PlayerController : MonoBehaviour
     private float yPosition = 5.0f;
     private float maxRotation = 30.0f;
     private float minRotation = -30.0f;
-    private float rotationCorrectionSpeed = 6.0f;
+    private float rotationCorrectionSpeed = 4.0f;
     private Transform localTrans;
     private Quaternion baseRotation;
     private Quaternion currentRotation;
+    private Quaternion rotationRight = Quaternion.Euler(0, 0, -30);
+    private Quaternion rotationLeft = Quaternion.Euler(0, 0, 30);
     
     
 
@@ -24,6 +27,9 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         baseRotation = transform.rotation;
+
+       
+
 
         gameOver = false;
 
@@ -35,7 +41,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         MovePlayer();
-        LimitPlayerRotation();
+        //LimitPlayerRotation();
         LimitPlayerMovement();
 
     }
@@ -51,10 +57,19 @@ public class PlayerController : MonoBehaviour
 
 
         //rotates player based on keyboard input
-        gameObject.transform.Rotate(Vector3.forward * -horizontalInput * Time.deltaTime * rotationSpeed);
+        //gameObject.transform.Rotate(Vector3.forward * -horizontalInput * Time.deltaTime * rotationSpeed);
 
         currentRotation = transform.rotation;
 
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            transform.rotation = Quaternion.Slerp(currentRotation, rotationRight, Time.deltaTime * rotationCorrectionSpeed);
+        }
+
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            transform.rotation = Quaternion.Slerp(currentRotation, rotationLeft, Time.deltaTime * rotationCorrectionSpeed);
+        }
 
         //rotates player back when no arrow keys are pressed
         if (!Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
