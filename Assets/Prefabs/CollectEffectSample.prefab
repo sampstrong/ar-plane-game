@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4819298746767142}
   - component: {fileID: 198174853753332646}
   - component: {fileID: 199528595795139600}
+  - component: {fileID: -8896029521784340518}
   m_Layer: 0
   m_Name: CollectEffectSample
   m_TagString: Untagged
@@ -4829,7 +4830,6 @@ ParticleSystemRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 10301, guid: 0000000000000000f000000000000000, type: 0}
-  - {fileID: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4875,3 +4875,16 @@ ParticleSystemRenderer:
   m_Mesh2: {fileID: 0}
   m_Mesh3: {fileID: 0}
   m_MaskInteraction: 0
+--- !u!114 &-8896029521784340518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1702657300312902}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 119bcbdea08de4c86b3c1dadd6d7c506, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speed: 50

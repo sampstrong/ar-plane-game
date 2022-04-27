@@ -9,14 +9,25 @@ public class PlayerController : MonoBehaviour
     public float xRange = 10.0f;
     public bool gameOver;
 
-    private float rotateSpeed = 10.0f;
-
+    private float rotationSpeed = 250.0f;
+    private float yPosition = 5.0f;
+    private float maxRotation = 30.0f;
+    private float minRotation = -30.0f;
+    private float rotationCorrectionSpeed = 6.0f;
+    private Transform localTrans;
+    private Quaternion baseRotation;
+    private Quaternion currentRotation;
+    
     
 
     // Start is called before the first frame update
     void Start()
     {
+        baseRotation = transform.rotation;
+
         gameOver = false;
+
+        localTrans = GetComponent<Transform>();
         
     }
 
@@ -24,6 +35,7 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         MovePlayer();
+        LimitPlayerRotation();
         LimitPlayerMovement();
 
     }
@@ -32,19 +44,48 @@ public class PlayerController : MonoBehaviour
     //will need to update to get touch input and use change in x position to use on phone with AR
     void MovePlayer()
     {
-        horizontalInput = Input.GetAxis("Horizontal");
-        transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * speed);
 
-        if(Input.GetKeyDown(KeyCode.RightArrow))
+        //move player left and right
+        horizontalInput = Input.GetAxis("Horizontal");
+        transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * speed, Space.World);
+
+
+        //rotates player based on keyboard input
+        gameObject.transform.Rotate(Vector3.forward * -horizontalInput * Time.deltaTime * rotationSpeed);
+
+        currentRotation = transform.rotation;
+
+
+        //rotates player back when no arrow keys are pressed
+        if (!Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
         {
-            gameObject.transform.Rotate(Vector3.forward * horizontalInput * Time.deltaTime * rotateSpeed);
+            transform.rotation = Quaternion.Slerp(currentRotation, baseRotation, Time.deltaTime * rotationCorrectionSpeed);
         }
+           
+          
+
+    }
+
+
+    void LimitPlayerRotation()
+    {
+
+
+        Vector3 playerEulerAngles = localTrans.rotation.eulerAngles;
+
+        playerEulerAngles.z = (playerEulerAngles.z > 180) ? playerEulerAngles.z - 360 : playerEulerAngles.z;
+        playerEulerAngles.z = Mathf.Clamp(playerEulerAngles.z, minRotation, maxRotation);
+
+        localTrans.rotation = Quaternion.Euler(playerEulerAngles);
+
     }
 
 
     //Limit player movement along x-axis to prevent from moving too far left or right
     void LimitPlayerMovement()
     {
+       
+
         if (transform.position.x < -xRange)
         {
             transform.position = new Vector3(-xRange, transform.position.y, transform.position.z);
@@ -54,6 +95,14 @@ public class PlayerController : MonoBehaviour
         {
             transform.position = new Vector3(xRange, transform.position.y, transform.position.z);
         }
+
+        if (transform.position.y != yPosition)
+        {
+            transform.position = new Vector3(transform.position.x, yPosition, transform.position.z);
+
+        }
+
+       
     }
 
     //Destroy Gameobjects depending on what reuns into what
