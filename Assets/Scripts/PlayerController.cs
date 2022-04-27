@@ -10,8 +10,9 @@ public class PlayerController : MonoBehaviour
     private float xRange = 10.0f;
     public bool gameOver;
     public bool powerUpActive;
-    
 
+    private Canvas gameOverScreen;
+    private Canvas scoreAndTime;
     
     private float yPosition = 5.0f;
     
@@ -23,6 +24,8 @@ public class PlayerController : MonoBehaviour
     private Quaternion rotationLeft = Quaternion.Euler(0, 0, 30);
 
     private BoxCollider powerUpCollider;
+
+    private GameManager gameManager;
     
     
     
@@ -36,7 +39,18 @@ public class PlayerController : MonoBehaviour
         powerUpActive = false;
 
         powerUpCollider = GetComponent<BoxCollider>();
+
+        gameOverScreen = GameObject.Find("Game Over Canvas").GetComponent<Canvas>();
+        gameOverScreen.enabled = false;
+
+        scoreAndTime = GameObject.Find("Score and Time Canvas").GetComponent<Canvas>();
+        scoreAndTime.enabled = true;
+
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+
         
+            
+
     }
 
     // Update is called once per frame
@@ -100,6 +114,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Goal"))
         {
             Destroy(other.gameObject);
+            gameManager.UpdateScore();
         }
 
         if (other.gameObject.CompareTag("PowerUp"))
@@ -116,7 +131,7 @@ public class PlayerController : MonoBehaviour
             if(!powerUpActive)
             {
                 Destroy(gameObject);
-                gameOver = true;
+                EndGame();
             }
             else
             {
@@ -137,6 +152,14 @@ public class PlayerController : MonoBehaviour
         powerUpCollider.enabled = false;
 
 
+    }
+
+
+    public void EndGame()
+    {
+        gameOver = true;
+        gameOverScreen.enabled = true;
+        scoreAndTime.enabled = false;
     }
 
 }
