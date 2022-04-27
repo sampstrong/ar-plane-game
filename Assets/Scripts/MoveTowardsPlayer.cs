@@ -12,7 +12,7 @@ public class MoveTowardsPlayer : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playerController = GameObject.Find("Plane").GetComponent<PlayerController>();
+        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
     }
 
     // Update is called once per frame

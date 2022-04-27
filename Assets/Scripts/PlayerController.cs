@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     private float yPosition = 5.0f;
     private float maxRotation = 30.0f;
     private float minRotation = -30.0f;
-    private float rotationCorrectionSpeed = 4.0f;
+    private float rotationCorrectionSpeed = 7.0f;
     private Transform localTrans;
     private Quaternion baseRotation;
     private Quaternion currentRotation;
@@ -59,13 +59,19 @@ public class PlayerController : MonoBehaviour
         //rotates player based on keyboard input
         //gameObject.transform.Rotate(Vector3.forward * -horizontalInput * Time.deltaTime * rotationSpeed);
 
+
+        //sets current rotation
         currentRotation = transform.rotation;
 
+
+        //smooth transition between base position and rotated right
         if (Input.GetKey(KeyCode.RightArrow))
         {
             transform.rotation = Quaternion.Slerp(currentRotation, rotationRight, Time.deltaTime * rotationCorrectionSpeed);
         }
 
+
+        //smooth transition between base position and rotated left
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             transform.rotation = Quaternion.Slerp(currentRotation, rotationLeft, Time.deltaTime * rotationCorrectionSpeed);
@@ -99,8 +105,9 @@ public class PlayerController : MonoBehaviour
     //Limit player movement along x-axis to prevent from moving too far left or right
     void LimitPlayerMovement()
     {
-       
+        transform.position = new Vector3(Mathf.Clamp(transform.position.x, -xRange, xRange), yPosition, transform.position.z);
 
+        /*
         if (transform.position.x < -xRange)
         {
             transform.position = new Vector3(-xRange, transform.position.y, transform.position.z);
@@ -116,6 +123,7 @@ public class PlayerController : MonoBehaviour
             transform.position = new Vector3(transform.position.x, yPosition, transform.position.z);
 
         }
+        */
 
        
     }

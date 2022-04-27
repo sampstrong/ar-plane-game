@@ -40,7 +40,7 @@ public class SpawnManager : MonoBehaviour
 
         InvokeRepeating("SpawnCloud", cloudSpawnDelay, cloudSpawnInterval);
 
-        playerController = GameObject.Find("Plane").GetComponent<PlayerController>();
+        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
     }
 
     // Update is called once per frame
