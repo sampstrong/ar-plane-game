@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MoveTowardsPlayer : MonoBehaviour
 {
-    public float speed = 50.0f;
+    public float speed;
 
     private float zDestroy = -23.0f;
     private PlayerController playerController;
@@ -19,6 +19,11 @@ public class MoveTowardsPlayer : MonoBehaviour
     void Update()
     {
         transform.Translate(Vector3.forward * Time.deltaTime * -speed);
+
+        if(playerController.powerUpActive)
+        {
+            speed = 65.0f;
+        }
 
         if ( transform.position.z < zDestroy)
         {

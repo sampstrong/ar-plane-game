@@ -5,21 +5,25 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     
-    public float horizontalInput;
-    public float speed = 10.0f;
-    public float xRange = 10.0f;
+    private float horizontalInput;
+    private float horizontalSpeed = 20.0f;
+    private float xRange = 10.0f;
     public bool gameOver;
+    public bool powerUpActive;
+    
 
-    private float rotationSpeed = 250.0f;
+    
     private float yPosition = 5.0f;
-    private float maxRotation = 30.0f;
-    private float minRotation = -30.0f;
-    private float rotationCorrectionSpeed = 7.0f;
-    private Transform localTrans;
+    
+    private float rotationSpeed = 7.0f;
+    
     private Quaternion baseRotation;
     private Quaternion currentRotation;
     private Quaternion rotationRight = Quaternion.Euler(0, 0, -30);
     private Quaternion rotationLeft = Quaternion.Euler(0, 0, 30);
+
+    private BoxCollider powerUpCollider;
+    
     
     
 
@@ -28,12 +32,10 @@ public class PlayerController : MonoBehaviour
     {
         baseRotation = transform.rotation;
 
-       
-
-
         gameOver = false;
+        powerUpActive = false;
 
-        localTrans = GetComponent<Transform>();
+        powerUpCollider = GetComponent<BoxCollider>();
         
     }
 
@@ -41,8 +43,8 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         MovePlayer();
-        //LimitPlayerRotation();
-        LimitPlayerMovement();
+        RotatePlayer();
+        
 
     }
 
@@ -53,13 +55,17 @@ public class PlayerController : MonoBehaviour
 
         //move player left and right
         horizontalInput = Input.GetAxis("Horizontal");
-        transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * speed, Space.World);
+        transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * horizontalSpeed, Space.World);
 
 
-        //rotates player based on keyboard input
-        //gameObject.transform.Rotate(Vector3.forward * -horizontalInput * Time.deltaTime * rotationSpeed);
+        //limits player movement on x and y axes
+        transform.position = new Vector3(Mathf.Clamp(transform.position.x, -xRange, xRange), yPosition, transform.position.z);
+
+    }
 
 
+   private void RotatePlayer()
+    {
         //sets current rotation
         currentRotation = transform.rotation;
 
@@ -67,66 +73,25 @@ public class PlayerController : MonoBehaviour
         //smooth transition between base position and rotated right
         if (Input.GetKey(KeyCode.RightArrow))
         {
-            transform.rotation = Quaternion.Slerp(currentRotation, rotationRight, Time.deltaTime * rotationCorrectionSpeed);
+            transform.rotation = Quaternion.Slerp(currentRotation, rotationRight, Time.deltaTime * rotationSpeed);
         }
 
 
         //smooth transition between base position and rotated left
         if (Input.GetKey(KeyCode.LeftArrow))
         {
-            transform.rotation = Quaternion.Slerp(currentRotation, rotationLeft, Time.deltaTime * rotationCorrectionSpeed);
+            transform.rotation = Quaternion.Slerp(currentRotation, rotationLeft, Time.deltaTime * rotationSpeed);
         }
 
         //rotates player back when no arrow keys are pressed
         if (!Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
         {
-            transform.rotation = Quaternion.Slerp(currentRotation, baseRotation, Time.deltaTime * rotationCorrectionSpeed);
+            transform.rotation = Quaternion.Slerp(currentRotation, baseRotation, Time.deltaTime * rotationSpeed);
         }
-           
-          
-
     }
 
 
-    void LimitPlayerRotation()
-    {
-
-
-        Vector3 playerEulerAngles = localTrans.rotation.eulerAngles;
-
-        playerEulerAngles.z = (playerEulerAngles.z > 180) ? playerEulerAngles.z - 360 : playerEulerAngles.z;
-        playerEulerAngles.z = Mathf.Clamp(playerEulerAngles.z, minRotation, maxRotation);
-
-        localTrans.rotation = Quaternion.Euler(playerEulerAngles);
-
-    }
-
-
-    //Limit player movement along x-axis to prevent from moving too far left or right
-    void LimitPlayerMovement()
-    {
-        transform.position = new Vector3(Mathf.Clamp(transform.position.x, -xRange, xRange), yPosition, transform.position.z);
-
-        /*
-        if (transform.position.x < -xRange)
-        {
-            transform.position = new Vector3(-xRange, transform.position.y, transform.position.z);
-        }
-
-        if (transform.position.x > xRange)
-        {
-            transform.position = new Vector3(xRange, transform.position.y, transform.position.z);
-        }
-
-        if (transform.position.y != yPosition)
-        {
-            transform.position = new Vector3(transform.position.x, yPosition, transform.position.z);
-
-        }
-        */
-
-       
-    }
+    
 
     //Destroy Gameobjects depending on what reuns into what
     //end game if player runs into enemy
@@ -140,13 +105,37 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("PowerUp"))
         {
             Destroy(other.gameObject);
+            powerUpCollider.enabled = true;
+            powerUpActive = true;
+            StartCoroutine(PowerUpCountdownRoutine());
+            
         }
 
         if (other.gameObject.CompareTag("Enemy"))
         {
-            Destroy(gameObject);
-            gameOver = true;
+            if(!powerUpActive)
+            {
+                Destroy(gameObject);
+                gameOver = true;
+            }
+            else
+            {
+                Destroy(other.gameObject);
+
+            }
+            
         }
+
+    }
+
+
+    //Coroutine timer for how long powerup remains active
+    IEnumerator PowerUpCountdownRoutine()
+    {
+        yield return new WaitForSeconds(4);
+        powerUpActive = false;
+        powerUpCollider.enabled = false;
+
 
     }
 
