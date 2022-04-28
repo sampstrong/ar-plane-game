@@ -13,24 +13,41 @@ public class SpawnManager : MonoBehaviour
     private float ySpawn = 5.0f;
     private float zSpawn = 23.0f;
     private float cloudYSpawn = 0.0f;
+    private float spawnPowerUpMultiplier = 4.0f;
 
     private PlayerController playerController;
+
+    float enemySpawnDelay;
+    float enemySpawnInterval;
+
+    float goalSpawnDelay;
+    float goalSpawnInterval;
+
+    float powerupSpawnDelay;
+    float powerupSpawnInterval;
+
+    float cloudSpawnDelay;
+    float cloudSpawnInterval;
 
 
     // Start is called before the first frame update
     void Start()
     {
-        float enemySpawnDelay = 1.0f;
-        float enemySpawnInterval = Random.Range(1.0f, 2.0f);
+        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
 
-        float goalSpawnDelay = 0.0f;
-        float goalSpawnInterval = Random.Range(0.8f, 1.5f);
+        enemySpawnDelay = 1.0f;
+        enemySpawnInterval = Random.Range(1.0f, 2.0f);
 
-        float powerupSpawnDelay = 5.0f;
-        float powerupSpawnInterval = Random.Range(5.0f, 10.0f);
+        goalSpawnDelay = 0.0f;
+        goalSpawnInterval = Random.Range(0.8f, 1.5f);
 
-        float cloudSpawnDelay = 1.0f;
-        float cloudSpawnInterval = Random.Range(1.0f, 2.0f);
+        powerupSpawnDelay = 5.0f;
+        powerupSpawnInterval = Random.Range(10.0f, 20.0f);
+
+        cloudSpawnDelay = 1.0f;
+        cloudSpawnInterval = Random.Range(1.0f, 2.0f);
+
+
 
         InvokeRepeating("SpawnEnemy", enemySpawnDelay, enemySpawnInterval);
 
@@ -40,7 +57,8 @@ public class SpawnManager : MonoBehaviour
 
         InvokeRepeating("SpawnCloud", cloudSpawnDelay, cloudSpawnInterval);
 
-        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
+        
+
     }
 
     // Update is called once per frame
@@ -102,4 +120,38 @@ public class SpawnManager : MonoBehaviour
             Instantiate(cloudPrefab[randCloudIndex], cloudSpawnPos, cloudPrefab[randCloudIndex].transform.rotation);
         }
     }
+
+    public void IncreaseSpawnRate()
+    {
+        CancelInvoke("SpawnEnemy");
+        CancelInvoke("SpawnGoal");
+        CancelInvoke("SpawnPowerUp");
+        CancelInvoke("SpawnCloud");
+
+        InvokeRepeating("SpawnEnemy", enemySpawnDelay, (enemySpawnInterval / spawnPowerUpMultiplier));
+
+        InvokeRepeating("SpawnGoal", goalSpawnDelay, (goalSpawnInterval / spawnPowerUpMultiplier));
+
+        InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, (powerupSpawnInterval / spawnPowerUpMultiplier));
+
+        InvokeRepeating("SpawnCloud", cloudSpawnDelay, (cloudSpawnInterval / spawnPowerUpMultiplier));
+
+    }
+
+    public void DecreaseSpawnRate()
+    {
+        CancelInvoke("SpawnEnemy");
+        CancelInvoke("SpawnGoal");
+        CancelInvoke("SpawnPowerUp");
+        CancelInvoke("SpawnCloud");
+
+        InvokeRepeating("SpawnEnemy", enemySpawnDelay, enemySpawnInterval);
+
+        InvokeRepeating("SpawnGoal", goalSpawnDelay, goalSpawnInterval);
+
+        InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, powerupSpawnInterval);
+
+        InvokeRepeating("SpawnCloud", cloudSpawnDelay, cloudSpawnInterval);
+    }
+
 }
