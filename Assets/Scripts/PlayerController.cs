@@ -26,6 +26,8 @@ public class PlayerController : MonoBehaviour
     private BoxCollider powerUpCollider;
 
     private GameManager gameManager;
+
+    private GameObject forceField;
     
     
     
@@ -48,7 +50,8 @@ public class PlayerController : MonoBehaviour
 
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
 
-        
+        forceField = GameObject.Find("Force Field");
+        forceField.SetActive(false);
             
 
     }
@@ -58,6 +61,7 @@ public class PlayerController : MonoBehaviour
     {
         MovePlayer();
         RotatePlayer();
+        EnableForceField();
         
 
     }
@@ -150,8 +154,17 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(4);
         powerUpActive = false;
         powerUpCollider.enabled = false;
+        forceField.SetActive(false);
 
 
+    }
+
+    private void EnableForceField()
+    {
+        if(powerUpActive)
+        {
+            forceField.SetActive(true);
+        }
     }
 
 
