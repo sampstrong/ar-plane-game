@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     private Quaternion rotationRight = Quaternion.Euler(0, 0, -30);
     private Quaternion rotationLeft = Quaternion.Euler(0, 0, 30);
 
-    private BoxCollider powerUpCollider;
+    private SphereCollider powerUpCollider;
 
     private GameManager gameManager;
 
@@ -40,7 +40,8 @@ public class PlayerController : MonoBehaviour
         gameOver = false;
         powerUpActive = false;
 
-        powerUpCollider = GetComponent<BoxCollider>();
+        powerUpCollider = GetComponent<SphereCollider>();
+        powerUpCollider.enabled = false;
 
         gameOverScreen = GameObject.Find("Game Over Canvas").GetComponent<Canvas>();
         gameOverScreen.enabled = false;
@@ -161,6 +162,8 @@ public class PlayerController : MonoBehaviour
 
     private void EnableForceField()
     {
+        forceField.transform.position = gameObject.transform.position;
+
         if(powerUpActive)
         {
             forceField.SetActive(true);

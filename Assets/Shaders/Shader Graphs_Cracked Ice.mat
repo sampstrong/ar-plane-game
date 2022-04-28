@@ -1,0 +1,69 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Shader Graphs_Cracked Ice
+  m_Shader: {fileID: -6465566751694194690, guid: 94b4baa8990df430081aa5f214a33e1b, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _SampleTexture2D_1d6b6ea98b024821bb8c5ffdc4184e70_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 6bb6630bb4f604208b5a025ec3595f0b, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_50722caad6764d2eb05cc1c355084530_Texture_1:
+        m_Texture: {fileID: 2800000, guid: ff98242368d9244fdaee3a77286968c9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_8a4026987a3a46029eb38372f93bdc55_Texture_1:
+        m_Texture: {fileID: 2800000, guid: b7d7df8974f9f40d380f596c6129d618, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_bae25e30638d417298cd30eb092e9598_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 37f7ae6b5b27047a2afd6d15c2defc49, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_f198c48be93e45508b72227f88be4d83_Texture_1:
+        m_Texture: {fileID: 2800000, guid: f1e2f55c53a684c2ea3714f688392440, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_ffc0c0664ed2490e839cd75fd44279f7_Texture_1:
+        m_Texture: {fileID: 2800000, guid: 6f2731686852d4af3a7f41433517b9a9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SimpleParallax_d12fcb0a313449c0bdf897017cf949a8_Texture2Ddd566bd45ad44ccea4186b2ad681bacd_1775797722:
+        m_Texture: {fileID: 2800000, guid: 7371ed6b945524b58ad72e07cc36b312, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_4e9d44ef79fb47ad91cdf1716cb2bc4f_Out_0:
+        m_Texture: {fileID: 2800000, guid: 6f2731686852d4af3a7f41433517b9a9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_d5eab838d7d94071861d49eb851d6cf1: -0.0007
+    m_Colors: []
+  m_BuildTextureStacks: []
