@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
 
     private TMP_Text scoreText;
     private TextMeshProUGUI timerText;
+    private TextMeshProUGUI finalScoreText;
 
     private PlayerController playerController;
 
@@ -76,8 +77,9 @@ public class GameManager : MonoBehaviour
 
     public void UpdateScore()
     {
-        score += 5;
+        score += 10;
         scoreText.text = $"SCORE: {score}";
+        finalScoreText.text = $"SCORE: {score}";
     }
 
     private void UpdateTimer()
@@ -98,6 +100,7 @@ public class GameManager : MonoBehaviour
         {
             scoreText = GameObject.Find("Score Text").GetComponent<TextMeshProUGUI>();
             timerText = GameObject.Find("Timer Text").GetComponent<TextMeshProUGUI>();
+            finalScoreText = GameObject.Find("Final Score Text").GetComponent<TextMeshProUGUI>();
             playerController = GameObject.Find("Player").GetComponent<PlayerController>();
 
             mainSceneLoaded = true;

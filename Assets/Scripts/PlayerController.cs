@@ -88,7 +88,7 @@ public class PlayerController : MonoBehaviour
     {
         MovePlayer();
         RotatePlayer();
-        EnableForceField();
+        UpdateForceFieldLocation();
      
     }
 
@@ -160,6 +160,8 @@ public class PlayerController : MonoBehaviour
             powerUpActive = true;
             StartCoroutine(PowerUpCountdownRoutine());
             spawnManager.IncreaseSpawnRate();
+            EnableForceField();
+            StartCoroutine(PowerUpFlashOffEnter());
         }
 
         if (other.gameObject.CompareTag("Enemy"))
@@ -186,9 +188,44 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(4);
         powerUpActive = false;
         spawnManager.DecreaseSpawnRate();
+        DisableForceField();
+       
  
     }
 
+    IEnumerator PowerUpFlashOffEnter()
+    {
+        yield return new WaitForSeconds(3);
+        DisableForceField();
+        StartCoroutine(PowerUpFlashOn());
+
+    }
+
+    IEnumerator PowerUpFlashOn()
+    {
+        yield return new WaitForSeconds(0.25f);
+        EnableForceField();
+        StartCoroutine(PowerUpFlashOff());
+    }
+
+    IEnumerator PowerUpFlashOff()
+    {
+        yield return new WaitForSeconds(0.25f);
+        DisableForceField();
+        StartCoroutine(PowerUpFlashOnOut());
+;
+    }
+
+    IEnumerator PowerUpFlashOnOut()
+    {
+        yield return new WaitForSeconds(0.25f);
+        EnableForceField();
+
+    }
+
+    /*
+     * old way of updating force field
+     * 
     private void EnableForceField()
     {
         forceField.transform.position = gameObject.transform.position;
@@ -214,6 +251,42 @@ public class PlayerController : MonoBehaviour
             planeMeshRenderer.material = baseMaterial;
             
         }
+    }
+    */
+
+    private void EnableForceField()
+    {
+        powerUpCollider.enabled = true;
+        forceField.SetActive(true);
+        planeMeshRenderer.material = glowMaterial;
+
+        missile01MeshRenderer.material = planeMeshRenderer.material;
+        missile02MeshRenderer.material = planeMeshRenderer.material;
+        missile03MeshRenderer.material = planeMeshRenderer.material;
+        missile04MeshRenderer.material = planeMeshRenderer.material;
+        wheel01MeshRenderer.material = planeMeshRenderer.material;
+        wheel02MeshRenderer.material = planeMeshRenderer.material;
+        wheel03MeshRenderer.material = planeMeshRenderer.material;
+    }
+
+    private void DisableForceField()
+    {
+        powerUpCollider.enabled = false;
+        forceField.SetActive(false);
+        planeMeshRenderer.material = baseMaterial;
+
+        missile01MeshRenderer.material = planeMeshRenderer.material;
+        missile02MeshRenderer.material = planeMeshRenderer.material;
+        missile03MeshRenderer.material = planeMeshRenderer.material;
+        missile04MeshRenderer.material = planeMeshRenderer.material;
+        wheel01MeshRenderer.material = planeMeshRenderer.material;
+        wheel02MeshRenderer.material = planeMeshRenderer.material;
+        wheel03MeshRenderer.material = planeMeshRenderer.material;
+    }
+
+    private void UpdateForceFieldLocation()
+    {
+        forceField.transform.position = gameObject.transform.position;
     }
 
 

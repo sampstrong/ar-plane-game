@@ -8,11 +8,14 @@ public class MoveTowardsPlayer : MonoBehaviour
 
     private float zDestroy = -23.0f;
     private PlayerController playerController;
+    
 
     // Start is called before the first frame update
     void Start()
     {
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
+
+        
     }
 
     // Update is called once per frame

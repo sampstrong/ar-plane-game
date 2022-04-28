@@ -13,7 +13,7 @@ public class SpawnManager : MonoBehaviour
     private float ySpawn = 5.0f;
     private float zSpawn = 23.0f;
     private float cloudYSpawn = 0.0f;
-    private float spawnPowerUpMultiplier = 4.0f;
+    public float spawnPowerUpMultiplier = 3.0f;
 
     private PlayerController playerController;
 
@@ -36,13 +36,13 @@ public class SpawnManager : MonoBehaviour
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
 
         enemySpawnDelay = 1.0f;
-        enemySpawnInterval = Random.Range(1.0f, 2.0f);
+        enemySpawnInterval = Random.Range(0.5f, 1.2f);
 
         goalSpawnDelay = 0.0f;
-        goalSpawnInterval = Random.Range(0.8f, 1.5f);
+        goalSpawnInterval = Random.Range(0.3f, 0.7f);
 
         powerupSpawnDelay = 5.0f;
-        powerupSpawnInterval = Random.Range(10.0f, 20.0f);
+        powerupSpawnInterval = Random.Range(18.0f, 25.0f);
 
         cloudSpawnDelay = 1.0f;
         cloudSpawnInterval = Random.Range(1.0f, 2.0f);

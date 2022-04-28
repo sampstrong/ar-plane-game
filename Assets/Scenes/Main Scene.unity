@@ -1224,7 +1224,7 @@ GameObject:
   - component: {fileID: 1425183264}
   - component: {fileID: 1425183263}
   m_Layer: 5
-  m_Name: Score Text
+  m_Name: Final Score Text
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1247,7 +1247,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: -5}
-  m_SizeDelta: {x: 194.3914, y: 65.6429}
+  m_SizeDelta: {x: 455.8524, y: 65.6429}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1425183263
 MonoBehaviour:
@@ -1833,6 +1833,7 @@ MonoBehaviour:
   - {fileID: 1295241607802383960, guid: f8e07008e397045ee8b122041e2c61ad, type: 3}
   - {fileID: 6150650730209125895, guid: 40905aef0fbb249d4a7eb7854b045fc4, type: 3}
   - {fileID: 2936297779848736394, guid: c25943e9c4c354072831a4baee33383d, type: 3}
+  spawnPowerUpMultiplier: 3
 --- !u!4 &2096734815
 Transform:
   m_ObjectHideFlags: 0
