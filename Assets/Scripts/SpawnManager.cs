@@ -10,6 +10,7 @@ public class SpawnManager : MonoBehaviour
     public GameObject[] cloudPrefab;
 
     private float spawnRange = 10.0f;
+    private float cloudSpawnRange = 20.0f;
     private float ySpawn = 5.0f;
     private float zSpawn = 23.0f;
     private float cloudYSpawn = 0.0f;
@@ -57,7 +58,7 @@ public class SpawnManager : MonoBehaviour
 
         InvokeRepeating("SpawnCloud", cloudSpawnDelay, cloudSpawnInterval);
 
-        
+        Debug.Log("Normal Spawn Rate Active");
 
     }
 
@@ -109,7 +110,7 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnCloud()
     {
-        float cloudRandX = Random.Range(-spawnRange, spawnRange);
+        float cloudRandX = Random.Range(-cloudSpawnRange, cloudSpawnRange);
         Vector3 cloudSpawnPos = new Vector3(cloudRandX, cloudYSpawn, zSpawn);
 
         int randCloudIndex = Random.Range(0, 4);
@@ -136,6 +137,8 @@ public class SpawnManager : MonoBehaviour
 
         InvokeRepeating("SpawnCloud", cloudSpawnDelay, (cloudSpawnInterval / spawnPowerUpMultiplier));
 
+
+        Debug.Log("Increased Spawn Rate Active");
     }
 
     public void DecreaseSpawnRate()
@@ -152,6 +155,8 @@ public class SpawnManager : MonoBehaviour
         InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, powerupSpawnInterval);
 
         InvokeRepeating("SpawnCloud", cloudSpawnDelay, cloudSpawnInterval);
+
+        Debug.Log("Normal Spawn Rate Active");
     }
 
 }

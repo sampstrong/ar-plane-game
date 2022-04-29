@@ -21,11 +21,11 @@ public class MoveTowardsPlayer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Translate(Vector3.forward * Time.deltaTime * -speed);
+        Move();
 
         if(playerController.powerUpActive)
         {
-            speed = 65.0f;
+            speed = 55.0f;
         }
 
         if ( transform.position.z < zDestroy)
@@ -38,5 +38,10 @@ public class MoveTowardsPlayer : MonoBehaviour
             speed = 0;
         }
 
+    }
+
+    public void Move()
+    {
+        transform.Translate(Vector3.forward * Time.deltaTime * -speed);
     }
 }

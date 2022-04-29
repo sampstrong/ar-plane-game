@@ -4,21 +4,26 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    public Color redTimerColor;
+
     private int score;
     private float timeLeft;
+    private float warningTime = 10.0f;
 
-    private TMP_Text scoreText;
-    private TextMeshProUGUI timerText;
-    private TextMeshProUGUI finalScoreText;
+    private Text scoreText;
+    private Text timerText;
+    private Text finalScoreText;
 
     private PlayerController playerController;
 
     private bool mainSceneLoaded;
+    
 
     
 
@@ -36,6 +41,8 @@ public class GameManager : MonoBehaviour
 
         mainSceneLoaded = false;
 
+        
+
     }
 
     
@@ -44,6 +51,7 @@ public class GameManager : MonoBehaviour
         if (mainSceneLoaded == true)
         {
             UpdateTimer();
+            
         }
         
     }
@@ -78,35 +86,79 @@ public class GameManager : MonoBehaviour
     public void UpdateScore()
     {
         score += 10;
-        scoreText.text = $"SCORE: {score}";
-        finalScoreText.text = $"SCORE: {score}";
+        scoreText.text = $"{score}";
+        finalScoreText.text = $"SCORE : {score}";
     }
 
     private void UpdateTimer()
     {
         timeLeft -= Time.deltaTime;
-        timerText.text = $"TIME: {Convert.ToInt32(timeLeft)}";
+        timerText.text = $"{Convert.ToInt32(timeLeft)}";
 
-        if(timeLeft < 0)
+        if (timeLeft < warningTime)
+        {
+            timerText.color = redTimerColor;
+
+        }
+
+        if (timeLeft < 0)
         {
             playerController.EndGame();
         }
+
     }
 
+   
+    /*
+     * attempt to make red text flash - doesn't sync well enough with count down
+     * 
+    IEnumerator FlashCountDown()
+    {
+        yield return new WaitForSeconds(20);
+
+        StartCoroutine(FlashOff());
+    }
+
+    IEnumerator FlashOff()
+    {
+        yield return new WaitForSeconds(0.5f);
+        timerText.enabled = false;
+
+        if(!playerController.gameOver)
+        {
+            StartCoroutine(FlashOn());
+        }
+        
+    }
+
+    IEnumerator FlashOn()
+    {
+        yield return new WaitForSeconds(0.5f);
+        timerText.enabled = true;
+
+        if(!playerController.gameOver)
+        {
+            StartCoroutine(FlashOff());
+        }
+        
+        
+    }
+    */
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == "Main Scene")
         {
-            scoreText = GameObject.Find("Score Text").GetComponent<TextMeshProUGUI>();
-            timerText = GameObject.Find("Timer Text").GetComponent<TextMeshProUGUI>();
-            finalScoreText = GameObject.Find("Final Score Text").GetComponent<TextMeshProUGUI>();
+            scoreText = GameObject.Find("Score Text").GetComponent<Text>();
+            timerText = GameObject.Find("Timer Text").GetComponent<Text>();
+            finalScoreText = GameObject.Find("Final Score Text").GetComponent<Text>();
             playerController = GameObject.Find("Player").GetComponent<PlayerController>();
 
             mainSceneLoaded = true;
+            
 
             score = 0;
-            timeLeft = 60;
+            timeLeft = 30;
         }
      
     }

@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: dcbaa985ea8df45d4b27e2f8dd259b1a, type: 2}
+  - {fileID: 2100000, guid: b2a913a0e306a481a8e5805c2b12cf3c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -210,3 +210,15 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.67489624, y: 0.95568633, z: 0.20007597}
   m_Center: {x: 0, y: -0.00000011920929, z: 0.0000000074505815}
+--- !u!114 &2124765485924000593
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2433940174127009060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 671965265c5a74ac2aa3ffbb7eee7e4b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

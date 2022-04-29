@@ -11,6 +11,15 @@ public class PlayerController : MonoBehaviour
     public Material baseMaterial;
     public Material glowMaterial;
 
+    public ParticleSystem goalParticles;
+    public ParticleSystem enemyParticles;
+    public ParticleSystem powerUpParticles;
+
+    public GameObject boostParticle;
+
+    public GameObject slowParticles;
+    public GameObject fastParticles;
+
     private float horizontalInput;
     private float horizontalSpeed = 20.0f;
     private float xRange = 10.0f;
@@ -79,7 +88,7 @@ public class PlayerController : MonoBehaviour
 
         spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
 
-
+        slowParticles.SetActive(true);
 
     }
 
@@ -143,40 +152,55 @@ public class PlayerController : MonoBehaviour
 
     
 
-    //Destroy Gameobjects depending on what reuns into what
+    //Destroy Gameobjects depending on what runs into what
     //end game if player runs into enemy
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Goal"))
         {
+
+            Instantiate(goalParticles, other.transform.position, Quaternion.identity);
+            //goalParticles.transform.position = other.transform.position;
             Destroy(other.gameObject);
+            goalParticles.Play();
             gameManager.UpdateScore();
         }
 
         if (other.gameObject.CompareTag("PowerUp"))
         {
             Destroy(other.gameObject);
+            Instantiate(powerUpParticles, other.transform.position, Quaternion.identity);
+            powerUpParticles.Play();
             
             powerUpActive = true;
-            StartCoroutine(PowerUpCountdownRoutine());
             spawnManager.IncreaseSpawnRate();
             EnableForceField();
-            StartCoroutine(PowerUpFlashOffEnter());
+            EnablePowerUpParticles();
+
+            StartCoroutine(PowerUpCountdownRoutine());
+            StartCoroutine(PowerUpFlashOff1());
+            
+            
         }
 
         if (other.gameObject.CompareTag("Enemy"))
         {
-            if(!powerUpActive)
+            Instantiate(enemyParticles, other.transform.position, Quaternion.identity);
+
+            if (!powerUpActive)
             {
                 Destroy(gameObject);
+                Destroy(other.gameObject);
                 EndGame();
             }
             else
             {
+                //enemyParticles.transform.position = other.transform.position;
                 Destroy(other.gameObject);
-
             }
-            
+
+            enemyParticles.Play();
+
         }
 
     }
@@ -185,51 +209,66 @@ public class PlayerController : MonoBehaviour
     //Coroutine timer for how long powerup remains active
     IEnumerator PowerUpCountdownRoutine()
     {
-        yield return new WaitForSeconds(4);
+        yield return new WaitForSeconds(5);
         powerUpActive = false;
         spawnManager.DecreaseSpawnRate();
         DisableForceField();
-       
- 
+        DisablePowerUpParticles();
+
     }
 
-    IEnumerator PowerUpFlashOffEnter()
+
+    //Coroutines for creating flashing effect when forcefield is about to expire
+    IEnumerator PowerUpFlashOff1()
     {
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(3.5f);
         DisableForceField();
-        StartCoroutine(PowerUpFlashOn());
+        StartCoroutine(PowerUpFlashOn2());
 
     }
 
-    IEnumerator PowerUpFlashOn()
+    IEnumerator PowerUpFlashOn2()
     {
         yield return new WaitForSeconds(0.25f);
         EnableForceField();
-        StartCoroutine(PowerUpFlashOff());
+        StartCoroutine(PowerUpFlashOff3());
     }
 
-    IEnumerator PowerUpFlashOff()
+    IEnumerator PowerUpFlashOff3()
     {
         yield return new WaitForSeconds(0.25f);
         DisableForceField();
-        StartCoroutine(PowerUpFlashOnOut());
+        StartCoroutine(PowerUpFlashOn4());
 ;
     }
 
-    IEnumerator PowerUpFlashOnOut()
+    IEnumerator PowerUpFlashOn4()
     {
         yield return new WaitForSeconds(0.25f);
         EnableForceField();
+        StartCoroutine(PowerUpFlashOff5());
 
     }
 
-    /*
-     * old way of updating force field
-     * 
-    private void EnableForceField()
+    IEnumerator PowerUpFlashOff5()
     {
-        forceField.transform.position = gameObject.transform.position;
+        yield return new WaitForSeconds(0.25f);
+        DisableForceField();
+        StartCoroutine(PowerUpFlashOn6());
+        ;
+    }
 
+    IEnumerator PowerUpFlashOn6()
+    {
+        yield return new WaitForSeconds(0.25f);
+        EnableForceField();
+      
+    }
+
+
+    //Methods controlling force field behavior when a power up is enabled
+    private void AssignAllPlaneMaterials()
+    {
         missile01MeshRenderer.material = planeMeshRenderer.material;
         missile02MeshRenderer.material = planeMeshRenderer.material;
         missile03MeshRenderer.material = planeMeshRenderer.material;
@@ -237,36 +276,16 @@ public class PlayerController : MonoBehaviour
         wheel01MeshRenderer.material = planeMeshRenderer.material;
         wheel02MeshRenderer.material = planeMeshRenderer.material;
         wheel03MeshRenderer.material = planeMeshRenderer.material;
-
-        if (powerUpActive)
-        {
-            powerUpCollider.enabled = true;
-            forceField.SetActive(true);
-            planeMeshRenderer.material = glowMaterial;
-        }
-        else
-        {
-            powerUpCollider.enabled = false;
-            forceField.SetActive(false);
-            planeMeshRenderer.material = baseMaterial;
-            
-        }
     }
-    */
 
     private void EnableForceField()
     {
+
         powerUpCollider.enabled = true;
         forceField.SetActive(true);
         planeMeshRenderer.material = glowMaterial;
 
-        missile01MeshRenderer.material = planeMeshRenderer.material;
-        missile02MeshRenderer.material = planeMeshRenderer.material;
-        missile03MeshRenderer.material = planeMeshRenderer.material;
-        missile04MeshRenderer.material = planeMeshRenderer.material;
-        wheel01MeshRenderer.material = planeMeshRenderer.material;
-        wheel02MeshRenderer.material = planeMeshRenderer.material;
-        wheel03MeshRenderer.material = planeMeshRenderer.material;
+        AssignAllPlaneMaterials();
     }
 
     private void DisableForceField()
@@ -275,13 +294,7 @@ public class PlayerController : MonoBehaviour
         forceField.SetActive(false);
         planeMeshRenderer.material = baseMaterial;
 
-        missile01MeshRenderer.material = planeMeshRenderer.material;
-        missile02MeshRenderer.material = planeMeshRenderer.material;
-        missile03MeshRenderer.material = planeMeshRenderer.material;
-        missile04MeshRenderer.material = planeMeshRenderer.material;
-        wheel01MeshRenderer.material = planeMeshRenderer.material;
-        wheel02MeshRenderer.material = planeMeshRenderer.material;
-        wheel03MeshRenderer.material = planeMeshRenderer.material;
+        AssignAllPlaneMaterials();
     }
 
     private void UpdateForceFieldLocation()
@@ -289,12 +302,48 @@ public class PlayerController : MonoBehaviour
         forceField.transform.position = gameObject.transform.position;
     }
 
+    private void EnablePowerUpParticles()
+    {
+        slowParticles.SetActive(false);
+        fastParticles.SetActive(true);
+        //boostParticle.SetActive(true);
+    }
 
+    private void DisablePowerUpParticles()
+    {
+        fastParticles.SetActive(false);
+        slowParticles.SetActive(true);
+        //boostParticle.SetActive(false);
+    }
+
+
+    //setting booleans to control game behavior when game is over
     public void EndGame()
     {
         gameOver = true;
         gameOverScreen.enabled = true;
-        scoreAndTime.enabled = false;
+
+        if(scoreAndTime.enabled == true)
+        {
+            scoreAndTime.enabled = false;
+        }
+        
+
+        if(powerUpActive)
+        {
+            DisableForceField();
+        }
+
+        if (slowParticles.activeInHierarchy == true)
+        {
+            slowParticles.GetComponent<ParticleSystem>().Pause();
+        }
+
+        if(fastParticles.activeInHierarchy == true)
+        {
+            fastParticles.GetComponent<ParticleSystem>().Pause();
+        }
+        
     }
 
 }
