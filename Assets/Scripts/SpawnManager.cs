@@ -34,7 +34,8 @@ public class SpawnManager : MonoBehaviour
     float cloudSpawnDelay;
     float cloudSpawnInterval;
 
-    
+    private AudioSource enemyAudioPlayer;
+    public AudioClip missileLaunchSound;
 
 
     // Start is called before the first frame update
@@ -71,6 +72,9 @@ public class SpawnManager : MonoBehaviour
 
         Debug.Log("Normal Spawn Rate Active");
 
+
+        enemyAudioPlayer = GameObject.Find("Enemy Sound FX Player").GetComponent<AudioSource>();
+
     }
 
     // Update is called once per frame
@@ -89,6 +93,8 @@ public class SpawnManager : MonoBehaviour
         if (playerController.gameOver == false)
         {
             Instantiate(enemyPrefab, enemySpawnPos, enemyPrefab.transform.rotation);
+
+            enemyAudioPlayer.PlayOneShot(missileLaunchSound);
         }
     }
 

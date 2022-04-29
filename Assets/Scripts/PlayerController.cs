@@ -51,7 +51,12 @@ public class PlayerController : MonoBehaviour
 
     private SpawnManager spawnManager;
 
-    
+    private AudioSource quietAudioPlayer;
+    private AudioSource loudAudioPlayer;
+    public AudioClip goalSound;
+    public AudioClip pickupSound;
+    public AudioClip explosionSound;
+    public AudioClip boostSound;
 
     // Start is called before the first frame update
     void Start()
@@ -91,6 +96,9 @@ public class PlayerController : MonoBehaviour
         spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
 
         slowParticles.SetActive(true);
+
+        quietAudioPlayer = GameObject.Find("Quiet Sound FX Player").GetComponent<AudioSource>();
+        loudAudioPlayer = GameObject.Find("Loud Sound FX Player").GetComponent<AudioSource>();
 
     }
 
@@ -166,6 +174,8 @@ public class PlayerController : MonoBehaviour
             Destroy(other.gameObject);
             goalParticles.Play();
             gameManager.UpdateScore();
+
+            quietAudioPlayer.PlayOneShot(goalSound);
         }
 
         if (other.gameObject.CompareTag("PowerUp"))
@@ -181,8 +191,9 @@ public class PlayerController : MonoBehaviour
 
             StartCoroutine(PowerUpCountdownRoutine());
             StartCoroutine(PowerUpFlashOff1());
-            
-            
+
+            quietAudioPlayer.PlayOneShot(pickupSound);
+            loudAudioPlayer.PlayOneShot(boostSound);
         }
 
         if(other.gameObject.CompareTag("TimeBoost"))
@@ -193,11 +204,15 @@ public class PlayerController : MonoBehaviour
 
 
             gameManager.AddTime();
+
+            quietAudioPlayer.PlayOneShot(pickupSound);
         }
 
         if (other.gameObject.CompareTag("Enemy"))
         {
+            loudAudioPlayer.PlayOneShot(explosionSound);
             Instantiate(enemyParticles, other.transform.position, Quaternion.identity);
+            
 
             if (!powerUpActive)
             {
@@ -212,7 +227,7 @@ public class PlayerController : MonoBehaviour
             }
 
             enemyParticles.Play();
-
+            
         }
 
     }
