@@ -7,14 +7,15 @@ public class SpawnManager : MonoBehaviour
     public GameObject enemyPrefab;
     public GameObject goalPrefab;
     public GameObject powerupPrefab;
+    public GameObject timeBoostPrefab;
     public GameObject[] cloudPrefab;
 
     private float spawnRange = 10.0f;
-    private float cloudSpawnRange = 20.0f;
     private float ySpawn = 5.0f;
     private float zSpawn = 23.0f;
+    private float cloudSpawnRange = 20.0f;
     private float cloudYSpawn = 0.0f;
-    public float spawnPowerUpMultiplier = 3.0f;
+    private float spawnPowerUpMultiplier = 2.5f;
 
     private PlayerController playerController;
 
@@ -27,8 +28,13 @@ public class SpawnManager : MonoBehaviour
     float powerupSpawnDelay;
     float powerupSpawnInterval;
 
+    float timeBoostSpawnDelay;
+    float timeBoostSpawnInterval;
+
     float cloudSpawnDelay;
     float cloudSpawnInterval;
+
+    
 
 
     // Start is called before the first frame update
@@ -43,7 +49,10 @@ public class SpawnManager : MonoBehaviour
         goalSpawnInterval = Random.Range(0.3f, 0.7f);
 
         powerupSpawnDelay = 5.0f;
-        powerupSpawnInterval = Random.Range(18.0f, 25.0f);
+        powerupSpawnInterval = Random.Range(25.0f, 30.0f);
+
+        timeBoostSpawnDelay = 15.0f;
+        timeBoostSpawnInterval = Random.Range(10.0f, 20.0f);
 
         cloudSpawnDelay = 1.0f;
         cloudSpawnInterval = Random.Range(1.0f, 2.0f);
@@ -55,6 +64,8 @@ public class SpawnManager : MonoBehaviour
         InvokeRepeating("SpawnGoal", goalSpawnDelay, goalSpawnInterval);
 
         InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, powerupSpawnInterval);
+
+        InvokeRepeating("SpawnTimeBoost", timeBoostSpawnDelay, timeBoostSpawnInterval);
 
         InvokeRepeating("SpawnCloud", cloudSpawnDelay, cloudSpawnInterval);
 
@@ -108,6 +119,21 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+
+    void SpawnTimeBoost()
+    {
+        float timeBoostRandX = Random.Range(-spawnRange, spawnRange);
+        Vector3 timeBoostSpawnPos = new Vector3(timeBoostRandX, ySpawn, zSpawn);
+
+
+        if (playerController.gameOver == false)
+        {
+            Instantiate(timeBoostPrefab, timeBoostSpawnPos, timeBoostPrefab.transform.rotation);
+        }
+
+    }
+
+
     void SpawnCloud()
     {
         float cloudRandX = Random.Range(-cloudSpawnRange, cloudSpawnRange);
@@ -122,6 +148,8 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
+    
+
     public void IncreaseSpawnRate()
     {
         CancelInvoke("SpawnEnemy");
@@ -129,11 +157,15 @@ public class SpawnManager : MonoBehaviour
         CancelInvoke("SpawnPowerUp");
         CancelInvoke("SpawnCloud");
 
+        powerupSpawnDelay = 15.0f;
+
         InvokeRepeating("SpawnEnemy", enemySpawnDelay, (enemySpawnInterval / spawnPowerUpMultiplier));
 
         InvokeRepeating("SpawnGoal", goalSpawnDelay, (goalSpawnInterval / spawnPowerUpMultiplier));
 
-        InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, (powerupSpawnInterval / spawnPowerUpMultiplier));
+        InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, (powerupSpawnInterval));
+
+        InvokeRepeating("SpawnTimeBoost", timeBoostSpawnDelay, (timeBoostSpawnInterval));
 
         InvokeRepeating("SpawnCloud", cloudSpawnDelay, (cloudSpawnInterval / spawnPowerUpMultiplier));
 
@@ -153,6 +185,8 @@ public class SpawnManager : MonoBehaviour
         InvokeRepeating("SpawnGoal", goalSpawnDelay, goalSpawnInterval);
 
         InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, powerupSpawnInterval);
+
+        InvokeRepeating("SpawnTimeBoost", timeBoostSpawnDelay, timeBoostSpawnInterval);
 
         InvokeRepeating("SpawnCloud", cloudSpawnDelay, cloudSpawnInterval);
 

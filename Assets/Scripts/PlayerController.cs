@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class PlayerController : MonoBehaviour
     public ParticleSystem goalParticles;
     public ParticleSystem enemyParticles;
     public ParticleSystem powerUpParticles;
+    public ParticleSystem timeBoostParticles;
 
     public GameObject boostParticle;
 
@@ -49,7 +51,7 @@ public class PlayerController : MonoBehaviour
 
     private SpawnManager spawnManager;
 
-
+    
 
     // Start is called before the first frame update
     void Start()
@@ -181,6 +183,16 @@ public class PlayerController : MonoBehaviour
             StartCoroutine(PowerUpFlashOff1());
             
             
+        }
+
+        if(other.gameObject.CompareTag("TimeBoost"))
+        {
+            Destroy(other.gameObject);
+            Instantiate(timeBoostParticles, other.transform.position, Quaternion.identity);
+            timeBoostParticles.Play();
+
+
+            gameManager.AddTime();
         }
 
         if (other.gameObject.CompareTag("Enemy"))
@@ -321,7 +333,12 @@ public class PlayerController : MonoBehaviour
     public void EndGame()
     {
         gameOver = true;
-        gameOverScreen.enabled = true;
+
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene"))
+        {
+            gameOverScreen.enabled = true;
+        }
+    
 
         if(scoreAndTime.enabled == true)
         {

@@ -411,7 +411,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 0.9411765, b: 0.23921569, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -453,7 +453,7 @@ GameObject:
   - component: {fileID: 401123846}
   - component: {fileID: 401123845}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Blue Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1809,7 +1809,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100002, guid: a93c012dd9ef6454fa7d140e976926f7, type: 3}
       propertyPath: m_Name
-      value: SF Title
+      value: Game Over & Final Score
+      objectReference: {fileID: 0}
+    - target: {fileID: 100002, guid: a93c012dd9ef6454fa7d140e976926f7, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 100004, guid: a93c012dd9ef6454fa7d140e976926f7, type: 3}
       propertyPath: m_Name
@@ -3445,12 +3449,12 @@ MonoBehaviour:
   enemyPrefab: {fileID: 293910214541698914, guid: 73b22324d21f64b05a793a1d237dab1f, type: 3}
   goalPrefab: {fileID: 3132136937554981938, guid: a7ad784e38f054aa0857ece1dc46fe0e, type: 3}
   powerupPrefab: {fileID: 8864870818504229027, guid: 84a7f46ffc1cd47d0bcd92920b055d76, type: 3}
+  timeBoostPrefab: {fileID: 5709147201111637326, guid: a556770f29caa4b12a885e34d8f615ef, type: 3}
   cloudPrefab:
   - {fileID: 3720514953527920743, guid: fb123db076ba34fa4857e83b2cef4776, type: 3}
   - {fileID: 1295241607802383960, guid: f8e07008e397045ee8b122041e2c61ad, type: 3}
   - {fileID: 6150650730209125895, guid: 40905aef0fbb249d4a7eb7854b045fc4, type: 3}
   - {fileID: 2936297779848736394, guid: c25943e9c4c354072831a4baee33383d, type: 3}
-  spawnPowerUpMultiplier: 3
 --- !u!4 &2096734815
 Transform:
   m_ObjectHideFlags: 0
@@ -8301,6 +8305,10 @@ PrefabInstance:
       propertyPath: powerUpParticles
       value: 
       objectReference: {fileID: 5839745531558054305, guid: 772080ddd5270469abc8b9a4e60915d8, type: 3}
+    - target: {fileID: 2239964174443656947, guid: 77e4c34cc245540df9abe844fe4151da, type: 3}
+      propertyPath: timeBoostParticles
+      value: 
+      objectReference: {fileID: 19814690, guid: cd4d7020429cde74db076ffa72495419, type: 3}
     - target: {fileID: 2239964174443656950, guid: 77e4c34cc245540df9abe844fe4151da, type: 3}
       propertyPath: m_Name
       value: Player

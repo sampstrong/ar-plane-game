@@ -10,11 +10,13 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    public Color whiteTimerColor;
     public Color redTimerColor;
 
     private int score;
     private float timeLeft;
     private float warningTime = 10.0f;
+    private float timeToAdd = 10.0f;
 
     private Text scoreText;
     private Text timerText;
@@ -92,8 +94,12 @@ public class GameManager : MonoBehaviour
 
     private void UpdateTimer()
     {
-        timeLeft -= Time.deltaTime;
-        timerText.text = $"{Convert.ToInt32(timeLeft)}";
+        if(!playerController.gameOver)
+        {
+            timeLeft -= Time.deltaTime;
+            timerText.text = $"{Convert.ToInt32(timeLeft)}";
+        }
+        
 
         if (timeLeft < warningTime)
         {
@@ -101,11 +107,21 @@ public class GameManager : MonoBehaviour
 
         }
 
+        if(timeLeft > warningTime)
+        {
+            timerText.color = whiteTimerColor;
+        }
+
         if (timeLeft < 0)
         {
             playerController.EndGame();
         }
 
+    }
+
+    public void AddTime()
+    {
+        timeLeft += timeToAdd;
     }
 
    

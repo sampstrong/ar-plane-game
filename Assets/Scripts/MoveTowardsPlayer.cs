@@ -25,7 +25,16 @@ public class MoveTowardsPlayer : MonoBehaviour
 
         if(playerController.powerUpActive)
         {
-            speed = 55.0f;
+            if(gameObject.CompareTag("PowerUpParticles"))
+            {
+                speed = 10.0f;
+            }
+            else
+            {
+                speed = 55.0f;
+            }
+
+            
         }
 
         if ( transform.position.z < zDestroy)

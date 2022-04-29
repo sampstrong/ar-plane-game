@@ -9,6 +9,8 @@ TagManager:
   - Goal
   - Cloud
   - FxTemporaire
+  - TimeBoost
+  - PowerUpParticles
   layers:
   - Default
   - TransparentFX

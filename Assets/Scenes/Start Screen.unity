@@ -10604,6 +10604,22 @@ PrefabInstance:
       propertyPath: redTimerColor.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 1137743979624285844, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
+      propertyPath: whiteTimerColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1137743979624285844, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
+      propertyPath: whiteTimerColor.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1137743979624285844, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
+      propertyPath: whiteTimerColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1137743979624285844, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
+      propertyPath: whiteTimerColor.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1137743979624285846, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
       propertyPath: m_Name
       value: Game Manager
