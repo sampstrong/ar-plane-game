@@ -46,7 +46,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   whiteTimerColor: {r: 1, g: 1, b: 1, a: 1}
   redTimerColor: {r: 1, g: 0.16470589, b: 0.16470589, a: 1}
-  playerNameInputField: {fileID: 0}
+  playerName: 
+  highScorePlayerName: 
+  highScore: 0
+  highScoreStartScreen: {fileID: 0}
 --- !u!82 &809883497
 AudioSource:
   m_ObjectHideFlags: 0

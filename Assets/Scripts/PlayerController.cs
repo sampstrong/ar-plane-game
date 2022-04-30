@@ -5,7 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
-
     public bool gameOver;
     public bool powerUpActive;
 
@@ -31,11 +30,10 @@ public class PlayerController : MonoBehaviour
     
     private Quaternion baseRotation;
     private Quaternion currentRotation;
+
+    //set desired banking angles when for player
     private Quaternion rotationRight = Quaternion.Euler(0, 0, -30);
     private Quaternion rotationLeft = Quaternion.Euler(0, 0, 30);
-
-    private Canvas gameOverScreen;
-    private Canvas scoreAndTime;
 
     private SphereCollider powerUpCollider;
     private GameManager gameManager;
@@ -61,27 +59,22 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //initialize player roatation as flat - used as a reference to return back to flat when there is no player input
         baseRotation = transform.rotation;
 
+        //initialize game over as false to start game
         gameOver = false;
+
+        //initialize power up state
         powerUpActive = false;
 
+        //get power up components and set them to not be active at game start
         powerUpCollider = GetComponent<SphereCollider>();
         powerUpCollider.enabled = false;
-
-        gameOverScreen = GameObject.Find("Game Over Canvas").GetComponent<Canvas>();
-        gameOverScreen.enabled = false;
-
-        scoreAndTime = GameObject.Find("Score and Time Canvas").GetComponent<Canvas>();
-        scoreAndTime.enabled = true;
-
-        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
-
-        
-
         forceField = GameObject.Find("Force Field");
         forceField.SetActive(false);
 
+        //get plane materials for use in changing them when power up is active
         planeMeshRenderer = GameObject.Find("Plane").GetComponent<MeshRenderer>();
         planeMeshRenderer.material = baseMaterial;
 
@@ -93,22 +86,27 @@ public class PlayerController : MonoBehaviour
         wheel02MeshRenderer = GameObject.Find("wheel02").GetComponent<MeshRenderer>();
         wheel03MeshRenderer = GameObject.Find("wheel03").GetComponent<MeshRenderer>();
 
-        spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
-
+        //initialize star particles to be at the normal, slower speed
         slowParticles.SetActive(true);
 
+        //get components for sound FX players
         quietAudioPlayer = GameObject.Find("Quiet Sound FX Player").GetComponent<AudioSource>();
         loudAudioPlayer = GameObject.Find("Loud Sound FX Player").GetComponent<AudioSource>();
 
+        //get game manager script as reference
+        gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
+
+        //get spawn manager as reference
+        spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
     }
 
-    // Update is called once per frame
+    //update player movement  & location
+    //update force field location to be the same as player
     void Update()
     {
         MovePlayer();
         RotatePlayer();
         UpdateForceFieldLocation();
-     
     }
 
     //Use arrow keys to move the player left and right
@@ -124,11 +122,10 @@ public class PlayerController : MonoBehaviour
             //limits player movement on x and y axes
             transform.position = new Vector3(Mathf.Clamp(transform.position.x, -xRange, xRange), yPosition, transform.position.z);
         }
-        
     }
 
-
-   private void RotatePlayer()
+    //bank player rotatation based on arrow input
+    private void RotatePlayer()
     {
 
         if (!gameOver)
@@ -136,21 +133,19 @@ public class PlayerController : MonoBehaviour
             //sets current rotation
             currentRotation = transform.rotation;
 
-
-            //smooth transition between base position and rotated right
+            //smooth transition between current rotation and right side rotation angle
             if (Input.GetKey(KeyCode.RightArrow))
             {
                 transform.rotation = Quaternion.Slerp(currentRotation, rotationRight, Time.deltaTime * rotationSpeed);
             }
 
-
-            //smooth transition between base position and rotated left
+            //smooth transition between current rotation and left side rotation angle
             if (Input.GetKey(KeyCode.LeftArrow))
             {
                 transform.rotation = Quaternion.Slerp(currentRotation, rotationLeft, Time.deltaTime * rotationSpeed);
             }
 
-            //rotates player back when no arrow keys are pressed
+            //rotates player back to flat when no arrow keys are pressed
             if (!Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
             {
                 transform.rotation = Quaternion.Slerp(currentRotation, baseRotation, Time.deltaTime * rotationSpeed);
@@ -159,18 +154,19 @@ public class PlayerController : MonoBehaviour
         
     }
 
-
-    
-
-    //Destroy Gameobjects depending on what runs into what
-    //end game if player runs into enemy
+    //Sets interactions when player collides with different game objects
     private void OnTriggerEnter(Collider other)
     {
+        /* When the player collides with a goal:
+         * - the goal game object is detroyed
+         * - particles are instantiated at the location of the goal and played
+         * - the goal sound oneshot is played
+         * - the score is updated in the game manager
+         */
         if (other.gameObject.CompareTag("Goal"))
         {
-
             Instantiate(goalParticles, other.transform.position, Quaternion.identity);
-            //goalParticles.transform.position = other.transform.position;
+            
             Destroy(other.gameObject);
             goalParticles.Play();
             gameManager.UpdateScore();
@@ -178,6 +174,12 @@ public class PlayerController : MonoBehaviour
             quietAudioPlayer.PlayOneShot(goalSound);
         }
 
+        /* When the player collides with a powerup:
+         * - the powerup game object is detroyed
+         * - particles are instantiated at the location of the powerup and played
+         * - the pickup and boost oneshots are played
+         * - power up is activated and a coroutine is started to control it's behavior
+         */
         if (other.gameObject.CompareTag("PowerUp"))
         {
             Destroy(other.gameObject);
@@ -196,7 +198,13 @@ public class PlayerController : MonoBehaviour
             loudAudioPlayer.PlayOneShot(boostSound);
         }
 
-        if(other.gameObject.CompareTag("TimeBoost"))
+        /* When the player collides with a time boost:
+         * - the time boost game object is detroyed
+         * - particles are instantiated at the location of the time boost and played
+         * - the pickup sound oneshot is played
+         * - time is added to the timer
+         */
+        if (other.gameObject.CompareTag("TimeBoost"))
         {
             Destroy(other.gameObject);
             Instantiate(timeBoostParticles, other.transform.position, Quaternion.identity);
@@ -208,12 +216,17 @@ public class PlayerController : MonoBehaviour
             quietAudioPlayer.PlayOneShot(pickupSound);
         }
 
+        /* When the player collides with an enemy:
+         * - the player is detroyed and the game ends if the power up is not active
+         * - the enemy game object is detroyed is the power up is active
+         * - explosion particles are instantiated at the location of the enemy and played
+         * - the explosion sound oneshot is played
+         */
         if (other.gameObject.CompareTag("Enemy"))
         {
             loudAudioPlayer.PlayOneShot(explosionSound);
             Instantiate(enemyParticles, other.transform.position, Quaternion.identity);
             
-
             if (!powerUpActive)
             {
                 Destroy(gameObject);
@@ -227,13 +240,10 @@ public class PlayerController : MonoBehaviour
             }
 
             enemyParticles.Play();
-            
         }
-
     }
 
-
-    //Coroutine timer for how long powerup remains active
+    //Coroutine timer that disables powerup after a set amount of time
     IEnumerator PowerUpCountdownRoutine()
     {
         yield return new WaitForSeconds(5);
@@ -241,17 +251,14 @@ public class PlayerController : MonoBehaviour
         spawnManager.DecreaseSpawnRate();
         DisableForceField();
         DisablePowerUpParticles();
-
     }
 
-
-    //Coroutines for creating flashing effect when forcefield is about to expire
+    //Coroutines that create a flashing effect when power up is about to expire
     IEnumerator PowerUpFlashOff1()
     {
         yield return new WaitForSeconds(3.5f);
         DisableForceField();
         StartCoroutine(PowerUpFlashOn2());
-
     }
 
     IEnumerator PowerUpFlashOn2()
@@ -266,7 +273,6 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
         DisableForceField();
         StartCoroutine(PowerUpFlashOn4());
-;
     }
 
     IEnumerator PowerUpFlashOn4()
@@ -274,7 +280,6 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
         EnableForceField();
         StartCoroutine(PowerUpFlashOff5());
-
     }
 
     IEnumerator PowerUpFlashOff5()
@@ -282,18 +287,15 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
         DisableForceField();
         StartCoroutine(PowerUpFlashOn6());
-        ;
     }
 
     IEnumerator PowerUpFlashOn6()
     {
         yield return new WaitForSeconds(0.25f);
         EnableForceField();
-      
     }
 
-
-    //Methods controlling force field behavior when a power up is enabled
+    //Sets all child materials on plane game object to be the same as parent material
     private void AssignAllPlaneMaterials()
     {
         missile01MeshRenderer.material = planeMeshRenderer.material;
@@ -305,9 +307,9 @@ public class PlayerController : MonoBehaviour
         wheel03MeshRenderer.material = planeMeshRenderer.material;
     }
 
+    //activates force field game object (when power up active)
     private void EnableForceField()
     {
-
         powerUpCollider.enabled = true;
         forceField.SetActive(true);
         planeMeshRenderer.material = glowMaterial;
@@ -315,6 +317,7 @@ public class PlayerController : MonoBehaviour
         AssignAllPlaneMaterials();
     }
 
+    //deactivates force field game object (when power up not active)
     private void DisableForceField()
     {
         powerUpCollider.enabled = false;
@@ -324,44 +327,35 @@ public class PlayerController : MonoBehaviour
         AssignAllPlaneMaterials();
     }
 
+    //updates force field location to be the same as player
     private void UpdateForceFieldLocation()
     {
         forceField.transform.position = gameObject.transform.position;
     }
 
+    //makes star particles move fast (when power up active)
     private void EnablePowerUpParticles()
     {
         slowParticles.SetActive(false);
         fastParticles.SetActive(true);
-        //boostParticle.SetActive(true);
     }
 
+    //makes start particles move at regular speed (when power up is not active)
     private void DisablePowerUpParticles()
     {
         fastParticles.SetActive(false);
         slowParticles.SetActive(true);
-        //boostParticle.SetActive(false);
     }
 
-
-    //setting booleans to control game behavior when game is over
+    //sets game over to true so any conditionals elsewhere update accordingly
+    //Saves the current high score
+    //disables the force field if it's active
+    //pauses star particles
     public void EndGame()
     {
         gameOver = true;
 
-        gameManager.SaveHighScore();
-
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene"))
-        {
-            gameOverScreen.enabled = true;
-        }
-    
-
-        if(scoreAndTime.enabled == true)
-        {
-            scoreAndTime.enabled = false;
-        }
-        
+        DataHandler.Instance.SaveHighScore();
 
         if(powerUpActive)
         {
@@ -377,9 +371,7 @@ public class PlayerController : MonoBehaviour
         {
             fastParticles.GetComponent<ParticleSystem>().Pause();
         }
-        
     }
-
 }
 
 

@@ -4,17 +4,9 @@ using UnityEngine;
 
 public class PowerUpAnimator : MonoBehaviour
 {
-
     private float rotateSpeed = 60.0f;
 
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
+    //rotates gameobject based on specified rotation speed
     void Update()
     {
         transform.Rotate(Vector3.up * Time.deltaTime * rotateSpeed);

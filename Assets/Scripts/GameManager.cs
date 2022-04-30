@@ -9,16 +9,14 @@ using System.IO;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
-
     public Color whiteTimerColor;
     public Color redTimerColor;
 
     public string playerName;
-    private string highScorePlayerName;
-
     private int score;
-    private int highScore;
+
+    public string highScorePlayerName;
+    public int highScore;
 
     private float timeLeft;
     private float warningTime = 10.0f;
@@ -28,81 +26,85 @@ public class GameManager : MonoBehaviour
     private Text timerText;
     private Text finalScoreText;
     private Text highScoreGameOver;
-    private Text highScoreStartScreen;
+    public Text highScoreStartScreen;
 
     private PlayerController playerController;
-    
 
-    private bool mainSceneLoaded;
+    public TMP_InputField playerNameInputField;
 
-    
+    public Canvas gameOverScreen;
+    public Canvas scoreAndTime;
 
 
-    
-
-    
-
-    
     void Start()
     {
+        //initialize score and timer
+        score = 0;
+        timeLeft = 30;
 
         
+        //get components from main scene when loaded
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene"))
+        {
+            scoreText = GameObject.Find("Score Text").GetComponent<Text>();
+            timerText = GameObject.Find("Timer Text").GetComponent<Text>();
+            finalScoreText = GameObject.Find("Final Score Text").GetComponent<Text>();
+            playerController = GameObject.Find("Player").GetComponent<PlayerController>();
 
-        // This first line just makes sure the listener isn't added twice
-        SceneManager.sceneLoaded -= OnSceneLoaded;
+            highScoreGameOver = GameObject.Find("Game Over High Score Text").GetComponent<Text>();
 
-        // Whenever a scene is loaded call OnSceneLoaded
-        SceneManager.sceneLoaded += OnSceneLoaded;
+            gameOverScreen = GameObject.Find("Game Over Canvas").GetComponent<Canvas>();
+            gameOverScreen.enabled = false;
 
-        mainSceneLoaded = false;
+            scoreAndTime = GameObject.Find("Score and Time Canvas").GetComponent<Canvas>();
+            scoreAndTime.enabled = true;
+        }
 
-        LoadHighScore();
-
-        highScoreStartScreen = GameObject.Find("High Score Text").GetComponent<Text>();
-        
+        //get components from start screen when loaded
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen"))
+        {
+            highScoreStartScreen = GameObject.Find("Start High Score Text").GetComponent<Text>();
+        }
     }
 
     
     void Update()
     {
-        if (mainSceneLoaded == true)
+        //start timer if main scene is loaded and change to game over screen when game ends
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene"))
         {
             UpdateTimer();
-            
+            UpdateUI();
         }
 
-        UpdateHighScore();
-
+        //update the high score and display it
+        SetHighScore();
+        DisplayHighScore();
     }
 
-
-    private void Awake()
-    {
-        if (Instance != null)
-        {
-            Destroy(gameObject);
-            return;
-        }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
-        
-
-    }
-
+    //load main scene (for button functionality in starting or restarting game)
     public void LoadMainScene()
     {
         SceneManager.LoadScene(1);
-
+        
     }
 
+    //load title screen (for button functionality in starting or restarting game)
     public void LoadTitleScreen()
     {
         SceneManager.LoadScene(0);
+        
     }
 
+    //get the input field component and set the current players name based on input value (stored when player clicks out of input field)
+    public void SetPlayerName()
+    {
+        playerNameInputField = GameObject.Find("Name Input Field").GetComponent<TMP_InputField>();
+        playerName = playerNameInputField.text;
+        Debug.Log(playerName);
+    }
 
+    //add points to score and update score text during game and at game end
     public void UpdateScore()
     {
         score += 10;
@@ -110,68 +112,96 @@ public class GameManager : MonoBehaviour
         finalScoreText.text = $"SCORE : {score}";
     }
 
-
-    void UpdateHighScore()
-    {
-        if(SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen"))
-        {
-            highScoreStartScreen.text = $"HIGH SCORE : {highScorePlayerName} - {highScore}";
-        }
-
-        if(SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene"))
-        {
-            highScoreGameOver.text = $"HIGH SCORE : {highScorePlayerName} - {highScore}";
-        }
-
-        if (score > highScore)
-        {
-            Instance.highScore = score;
-            Instance.highScorePlayerName = playerName;
-        }
-
-        //Debug.Log(highScore + highScorePlayerName);
-    }
-
-
+    //reset high score (when reset button is pressed)
     public void ResetHighScore()
     {
-        Instance.highScore = 0;
-        SaveHighScore();
+        DataHandler.Instance.highScore = score;
+        DataHandler.Instance.highScorePlayerName = null;
+
+        Debug.Log("reset button pressed");
+
+        DataHandler.Instance.SaveHighScore();
+        DataHandler.Instance.LoadHighScore();
+    }
+    
+    //set new high score when current score exceeds the stored high score value
+    //store player name associated with new high score
+    void SetHighScore()
+    {
+        if (score > DataHandler.Instance.highScore)
+        {
+            DataHandler.Instance.highScore = score;
+            DataHandler.Instance.highScorePlayerName = playerName;
+        }
     }
 
+    //updates text display of high score value and high score player on start screen and main scene
+    public void DisplayHighScore()
+    {
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen"))
+        {
+            highScoreStartScreen.text = $"HIGH SCORE : {DataHandler.Instance.highScorePlayerName} - {DataHandler.Instance.highScore}";
+        }
 
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene"))
+        {
+            highScoreGameOver.text = $"HIGH SCORE : {DataHandler.Instance.highScorePlayerName} - {DataHandler.Instance.highScore}";
+        }
+    }
+
+    
     private void UpdateTimer()
     {
+        //counds down time in seconds when game is not over
         if(!playerController.gameOver)
         {
             timeLeft -= Time.deltaTime;
             timerText.text = $"{Convert.ToInt32(timeLeft)}";
         }
 
+        //sets timer text color to red when time is below the warning time
         if (timeLeft < warningTime)
         {
             timerText.color = redTimerColor;
-
         }
 
+        //sets time text color to white when time is above the warning time
         if(timeLeft > warningTime)
         {
             timerText.color = whiteTimerColor;
         }
 
+        //ends game when timer reaches zero
         if (timeLeft < 0)
         {
             playerController.EndGame();
         }
-
     }
 
+    //adds time to timer (when time boost pickup is collected)
     public void AddTime()
     {
         timeLeft += timeToAdd;
     }
 
-   
+    //Controls UI in main scene
+    private void UpdateUI()
+    {
+        //shows score and timer during game and hides game over screen
+        if(!playerController.gameOver)
+        {
+            scoreAndTime.enabled = true;
+            gameOverScreen.enabled = false;
+        }
+
+        //hides score and time when game is over and shows game over screen
+        else
+        {
+            scoreAndTime.enabled = false;
+            gameOverScreen.enabled = true;
+        }
+    }
+
     /*
      * attempt to make red text flash - doesn't sync well enough with count down
      * 
@@ -191,7 +221,6 @@ public class GameManager : MonoBehaviour
         {
             StartCoroutine(FlashOn());
         }
-        
     }
 
     IEnumerator FlashOn()
@@ -203,64 +232,6 @@ public class GameManager : MonoBehaviour
         {
             StartCoroutine(FlashOff());
         }
-        
-        
     }
     */
-
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name == "Main Scene")
-        {
-            scoreText = GameObject.Find("Score Text").GetComponent<Text>();
-            timerText = GameObject.Find("Timer Text").GetComponent<Text>();
-            finalScoreText = GameObject.Find("Final Score Text").GetComponent<Text>();
-            playerController = GameObject.Find("Player").GetComponent<PlayerController>();
-
-            highScoreGameOver = GameObject.Find("High Score Text").GetComponent<Text>();
-
-            mainSceneLoaded = true;
-            
-
-            score = 0;
-            timeLeft = 30;
-        }
-
-        if (scene.name == "Start Screen")
-        {
-            highScoreStartScreen = GameObject.Find("High Score Text").GetComponent<Text>();
-        }
-    }
-
-    [Serializable]
-    class SaveData
-    {
-        public int highScore;
-        public string highScorePlayerName;
-    }
-
-    public void SaveHighScore()
-    {
-        SaveData data = new SaveData();
-        data.highScore = highScore;
-        data.highScorePlayerName = highScorePlayerName;
-
-        string json = JsonUtility.ToJson(data);
-
-        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
-    }
-
-    public void LoadHighScore()
-    {
-        string path = Application.persistentDataPath + "/savefile.json";
-        if (File.Exists(path))
-        {
-            string json = File.ReadAllText(path);
-            SaveData data = JsonUtility.FromJson<SaveData>(json);
-
-            highScore = data.highScore;
-            highScorePlayerName = data.highScorePlayerName;
-        }
-    }
-
 }
