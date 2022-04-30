@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 using TMPro;
 using System;
 using UnityEngine.UI;
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,7 +14,12 @@ public class GameManager : MonoBehaviour
     public Color whiteTimerColor;
     public Color redTimerColor;
 
+    public string playerName;
+    private string highScorePlayerName;
+
     private int score;
+    private int highScore;
+
     private float timeLeft;
     private float warningTime = 10.0f;
     private float timeToAdd = 10.0f;
@@ -21,10 +27,17 @@ public class GameManager : MonoBehaviour
     private Text scoreText;
     private Text timerText;
     private Text finalScoreText;
+    private Text highScoreGameOver;
+    private Text highScoreStartScreen;
 
     private PlayerController playerController;
+    
 
     private bool mainSceneLoaded;
+
+    
+
+
     
 
     
@@ -43,8 +56,10 @@ public class GameManager : MonoBehaviour
 
         mainSceneLoaded = false;
 
-        
+        LoadHighScore();
 
+        highScoreStartScreen = GameObject.Find("High Score Text").GetComponent<Text>();
+        
     }
 
     
@@ -55,7 +70,9 @@ public class GameManager : MonoBehaviour
             UpdateTimer();
             
         }
-        
+
+        UpdateHighScore();
+
     }
 
 
@@ -77,6 +94,7 @@ public class GameManager : MonoBehaviour
     public void LoadMainScene()
     {
         SceneManager.LoadScene(1);
+
     }
 
     public void LoadTitleScreen()
@@ -92,6 +110,36 @@ public class GameManager : MonoBehaviour
         finalScoreText.text = $"SCORE : {score}";
     }
 
+
+    void UpdateHighScore()
+    {
+        if(SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen"))
+        {
+            highScoreStartScreen.text = $"HIGH SCORE : {highScorePlayerName} - {highScore}";
+        }
+
+        if(SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene"))
+        {
+            highScoreGameOver.text = $"HIGH SCORE : {highScorePlayerName} - {highScore}";
+        }
+
+        if (score > highScore)
+        {
+            Instance.highScore = score;
+            Instance.highScorePlayerName = playerName;
+        }
+
+        //Debug.Log(highScore + highScorePlayerName);
+    }
+
+
+    public void ResetHighScore()
+    {
+        Instance.highScore = 0;
+        SaveHighScore();
+    }
+
+
     private void UpdateTimer()
     {
         if(!playerController.gameOver)
@@ -99,7 +147,6 @@ public class GameManager : MonoBehaviour
             timeLeft -= Time.deltaTime;
             timerText.text = $"{Convert.ToInt32(timeLeft)}";
         }
-        
 
         if (timeLeft < warningTime)
         {
@@ -170,14 +217,50 @@ public class GameManager : MonoBehaviour
             finalScoreText = GameObject.Find("Final Score Text").GetComponent<Text>();
             playerController = GameObject.Find("Player").GetComponent<PlayerController>();
 
+            highScoreGameOver = GameObject.Find("High Score Text").GetComponent<Text>();
+
             mainSceneLoaded = true;
             
 
             score = 0;
             timeLeft = 30;
         }
-     
+
+        if (scene.name == "Start Screen")
+        {
+            highScoreStartScreen = GameObject.Find("High Score Text").GetComponent<Text>();
+        }
     }
 
-    
+    [Serializable]
+    class SaveData
+    {
+        public int highScore;
+        public string highScorePlayerName;
+    }
+
+    public void SaveHighScore()
+    {
+        SaveData data = new SaveData();
+        data.highScore = highScore;
+        data.highScorePlayerName = highScorePlayerName;
+
+        string json = JsonUtility.ToJson(data);
+
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
+    }
+
+    public void LoadHighScore()
+    {
+        string path = Application.persistentDataPath + "/savefile.json";
+        if (File.Exists(path))
+        {
+            string json = File.ReadAllText(path);
+            SaveData data = JsonUtility.FromJson<SaveData>(json);
+
+            highScore = data.highScore;
+            highScorePlayerName = data.highScorePlayerName;
+        }
+    }
+
 }

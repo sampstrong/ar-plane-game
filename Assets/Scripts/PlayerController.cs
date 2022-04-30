@@ -349,6 +349,8 @@ public class PlayerController : MonoBehaviour
     {
         gameOver = true;
 
+        gameManager.SaveHighScore();
+
         if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene"))
         {
             gameOverScreen.enabled = true;
