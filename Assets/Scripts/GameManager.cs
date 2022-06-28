@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour
 
         
         //get components from main scene when loaded
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene"))
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile"))
         {
             scoreText = GameObject.Find("Score Text").GetComponent<Text>();
             timerText = GameObject.Find("Timer Text").GetComponent<Text>();
@@ -61,7 +61,7 @@ public class GameManager : MonoBehaviour
         }
 
         //get components from start screen when loaded
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen"))
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen Mobile"))
         {
             highScoreStartScreen = GameObject.Find("Start High Score Text").GetComponent<Text>();
         }
@@ -71,7 +71,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         //start timer if main scene is loaded and change to game over screen when game ends
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene"))
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile"))
         {
             UpdateTimer();
             UpdateUI();
@@ -86,14 +86,29 @@ public class GameManager : MonoBehaviour
     public void LoadMainScene()
     {
         SceneManager.LoadScene(1);
-        
+    }
+    
+    //load main screen for mobile
+    public void LoadMainSceneMobile()
+    {
+        SceneManager.LoadScene(3);
     }
 
-    //load title screen (for button functionality in starting or restarting game)
+    //load title screen for desktop (for button functionality in starting or restarting game)
     public void LoadTitleScreen()
     {
         SceneManager.LoadScene(0);
-        
+    }
+    
+    //load title screen for mobile
+    public void LoadTitleScreenMobile()
+    {
+        SceneManager.LoadScene(2);
+    }
+
+    public void ShowKeyboard()
+    {
+        TouchScreenKeyboard.Open(nameof(TouchScreenKeyboardType.Default));
     }
 
     //get the input field component and set the current players name based on input value (stored when player clicks out of input field)
@@ -136,14 +151,14 @@ public class GameManager : MonoBehaviour
     }
 
     //updates text display of high score value and high score player on start screen and main scene
-    public void DisplayHighScore()
+    private void DisplayHighScore()
     {
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen"))
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen Mobile"))
         {
             highScoreStartScreen.text = $"HIGH SCORE : {DataHandler.Instance.highScorePlayerName} - {DataHandler.Instance.highScore}";
         }
 
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene"))
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile"))
         {
             highScoreGameOver.text = $"HIGH SCORE : {DataHandler.Instance.highScorePlayerName} - {DataHandler.Instance.highScore}";
         }
@@ -152,11 +167,13 @@ public class GameManager : MonoBehaviour
     
     private void UpdateTimer()
     {
-        //counds down time in seconds when game is not over
+        Debug.Log($"Game manager game is over: {playerController.gameOver}");
+        //counts down time in seconds when game is not over
         if(!playerController.gameOver)
         {
             timeLeft -= Time.deltaTime;
-            timerText.text = $"{Convert.ToInt32(timeLeft)}";
+            timerText.text = $"{(int)(timeLeft)}";
+            Debug.Log(timeLeft);
         }
 
         //sets timer text color to red when time is below the warning time
@@ -199,6 +216,7 @@ public class GameManager : MonoBehaviour
         {
             scoreAndTime.enabled = false;
             gameOverScreen.enabled = true;
+            Debug.Log(gameOverScreen.enabled);
         }
     }
 

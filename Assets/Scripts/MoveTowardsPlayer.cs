@@ -17,6 +17,7 @@ public class MoveTowardsPlayer : MonoBehaviour
     {
         //get the player controller script as a reference
         playerController = GameObject.Find("Player").GetComponent<PlayerController>();
+        
     }
 
     void Update()

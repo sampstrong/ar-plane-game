@@ -55,6 +55,11 @@ public class PlayerController : MonoBehaviour
     public AudioClip pickupSound;
     public AudioClip explosionSound;
     public AudioClip boostSound;
+    
+    private bool leftInput = false;
+    private bool rightInput = false;
+    private bool touchUsed = false;
+    private bool arrowsUsed = false;
 
     // Start is called before the first frame update
     void Start()
@@ -107,24 +112,70 @@ public class PlayerController : MonoBehaviour
         MovePlayer();
         RotatePlayer();
         UpdateForceFieldLocation();
+        Debug.Log($"Game Over: {gameOver}");
     }
 
     //Use arrow keys to move the player left and right
     //will need to update to get touch input and use change in x position to use on phone with AR
     void MovePlayer()
     {
+        float currentHorizontalInput = horizontalInput;
+        float horizontalInputMultiplier = 37.5f;
+        
         if (!gameOver)
         {
-            //move player left and right
-            horizontalInput = Input.GetAxis("Horizontal");
-            transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * horizontalSpeed, Space.World);
+            if (Input.touchCount > 0) //mobile input system used
+            {
+                touchUsed = true;
+                Touch touch = Input.GetTouch(0);
 
-            //limits player movement on x and y axes
-            transform.position = new Vector3(Mathf.Clamp(transform.position.x, -xRange, xRange), yPosition, transform.position.z);
+                float posXFromCenter = (touch.position.x - 540) / 540;
+
+                float horizontalInput;
+
+                if (posXFromCenter > 0.1f)
+                {
+                    horizontalInput = Mathf.Lerp(currentHorizontalInput, 1, Time.deltaTime * horizontalInputMultiplier);
+                    rightInput = true;
+                    leftInput = false;
+                }
+                else if (posXFromCenter < -0.1f)
+                {
+                    horizontalInput = Mathf.Lerp(currentHorizontalInput, -1, Time.deltaTime * horizontalInputMultiplier);
+                    leftInput = true;
+                    rightInput = false;
+                }
+                else
+                {
+                    horizontalInput = 0;
+                    rightInput = false;
+                    leftInput = false;
+                }
+                
+                //move player left and right based on touch input from center of screen
+                transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * horizontalSpeed, Space.World);
+                
+            }
+            else //desktop input system used
+            {
+                if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow))
+                {
+                    arrowsUsed = true;
+                }
+                
+                
+                //move player left and right
+                horizontalInput = Input.GetAxis("Horizontal");
+                transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * horizontalSpeed, Space.World);
+
+                //limits player movement on x and y axes
+                transform.position = new Vector3(Mathf.Clamp(transform.position.x, -xRange, xRange), yPosition, transform.position.z);
+            }
+            
         }
     }
 
-    //bank player rotatation based on arrow input
+    //bank player rotation based on arrow input
     private void RotatePlayer()
     {
 
@@ -134,19 +185,19 @@ public class PlayerController : MonoBehaviour
             currentRotation = transform.rotation;
 
             //smooth transition between current rotation and right side rotation angle
-            if (Input.GetKey(KeyCode.RightArrow))
+            if (Input.GetKey(KeyCode.RightArrow) || rightInput)
             {
                 transform.rotation = Quaternion.Slerp(currentRotation, rotationRight, Time.deltaTime * rotationSpeed);
             }
 
             //smooth transition between current rotation and left side rotation angle
-            if (Input.GetKey(KeyCode.LeftArrow))
+            if (Input.GetKey(KeyCode.LeftArrow) || leftInput)
             {
                 transform.rotation = Quaternion.Slerp(currentRotation, rotationLeft, Time.deltaTime * rotationSpeed);
             }
 
             //rotates player back to flat when no arrow keys are pressed
-            if (!Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow))
+            if (arrowsUsed && (!Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.RightArrow)) || (touchUsed && Input.touchCount < 1))
             {
                 transform.rotation = Quaternion.Slerp(currentRotation, baseRotation, Time.deltaTime * rotationSpeed);
             }
@@ -232,6 +283,7 @@ public class PlayerController : MonoBehaviour
                 Destroy(gameObject);
                 Destroy(other.gameObject);
                 EndGame();
+                
             }
             else
             {
@@ -353,7 +405,9 @@ public class PlayerController : MonoBehaviour
     //pauses star particles
     public void EndGame()
     {
+        Debug.Log("game ended");
         gameOver = true;
+        Debug.Log($"game over: {gameOver}");
 
         DataHandler.Instance.SaveHighScore();
 

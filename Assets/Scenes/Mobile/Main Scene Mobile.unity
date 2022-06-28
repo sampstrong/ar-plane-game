@@ -312,6 +312,18 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1137743979624285844, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1137743979624285844, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
+      propertyPath: scoreAndTime
+      value: 
+      objectReference: {fileID: 310471}
+    - target: {fileID: 1137743979624285844, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
+      propertyPath: gameOverScreen
+      value: 
+      objectReference: {fileID: 1032929281}
     - target: {fileID: 1137743979624285846, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
       propertyPath: m_Name
       value: Game Manager
@@ -360,8 +372,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 809883497, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
+--- !u!114 &80978272 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1137743979624285844, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
+  m_PrefabInstance: {fileID: 80978271}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3b98f218b8a545e3bcb09045f351a5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &245487766
 GameObject:
   m_ObjectHideFlags: 0
@@ -949,14 +973,14 @@ PrefabInstance:
     - target: {fileID: 11400004, guid: 05a81c3d5091440058129444d28322f3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1137743979624285844, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
+      objectReference: {fileID: 80978272}
     - target: {fileID: 11400004, guid: 05a81c3d5091440058129444d28322f3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: 05a81c3d5091440058129444d28322f3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: LoadTitleScreen
+      value: LoadTitleScreenMobile
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: 05a81c3d5091440058129444d28322f3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -1075,7 +1099,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!135 &572645448
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -1625,7 +1649,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1032929279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2923,14 +2947,14 @@ PrefabInstance:
     - target: {fileID: 11400004, guid: 05a81c3d5091440058129444d28322f3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1137743979624285844, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
+      objectReference: {fileID: 80978272}
     - target: {fileID: 11400004, guid: 05a81c3d5091440058129444d28322f3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: 05a81c3d5091440058129444d28322f3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: LoadMainScene
+      value: LoadMainSceneMobile
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: 05a81c3d5091440058129444d28322f3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
@@ -3251,7 +3275,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2096734815}
-  - component: {fileID: 2096734814}
+  - component: {fileID: 2096734817}
   m_Layer: 0
   m_Name: SpawnManager
   m_TagString: Untagged
@@ -3259,7 +3283,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &2096734814
+--- !u!4 &2096734815
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2096734813}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.16704, y: -26.537682, z: 14.342955}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2096734817
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3280,22 +3319,7 @@ MonoBehaviour:
   - {fileID: 1295241607802383960, guid: f8e07008e397045ee8b122041e2c61ad, type: 3}
   - {fileID: 6150650730209125895, guid: 40905aef0fbb249d4a7eb7854b045fc4, type: 3}
   - {fileID: 2936297779848736394, guid: c25943e9c4c354072831a4baee33383d, type: 3}
-  missileLaunchSound: {fileID: 8300000, guid: aecad8d8a1e644343bb44b7c9c3d717e, type: 3}
---- !u!4 &2096734815
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2096734813}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.16704, y: -26.537682, z: 14.342955}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  missileLaunchSound: {fileID: 8300000, guid: 5ee9b372006be4e5f98d18462ad078d8, type: 3}
 --- !u!199 &381844476539186858
 ParticleSystemRenderer:
   serializedVersion: 6
@@ -8133,7 +8157,7 @@ PrefabInstance:
       objectReference: {fileID: 8300000, guid: 6f1637b41d770415d9d1e6a33a1db4c8, type: 3}
     - target: {fileID: 2239964174443656947, guid: 77e4c34cc245540df9abe844fe4151da, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2239964174443656947, guid: 77e4c34cc245540df9abe844fe4151da, type: 3}
       propertyPath: boostSound
@@ -8169,43 +8193,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 77e4c34cc245540df9abe844fe4151da, type: 3}
---- !u!1 &2239964174075591109 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 2239964174443656950, guid: 77e4c34cc245540df9abe844fe4151da, type: 3}
-  m_PrefabInstance: {fileID: 2239964174075591108}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &2239964174075591110 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 297462787201524908, guid: 77e4c34cc245540df9abe844fe4151da, type: 3}
-  m_PrefabInstance: {fileID: 2239964174075591108}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2239964174075591111
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2239964174075591109}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4fd2a0e505ec14ac0a2cef683dc96500, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  gameOver: 0
-  powerUpActive: 0
-  baseMaterial: {fileID: 2100000, guid: f9063a172dec5824f87a148932421f2d, type: 2}
-  glowMaterial: {fileID: 2100000, guid: 06f2f5c58fb824f9a8ae95a3116e0016, type: 2}
-  goalParticles: {fileID: 19808876, guid: 11387396ccd933544b0567a831ce751a, type: 3}
-  enemyParticles: {fileID: 19800002, guid: 6ecf76dc4f268d340b2666896a954bcc, type: 3}
-  powerUpParticles: {fileID: 5839745531558054305, guid: 772080ddd5270469abc8b9a4e60915d8, type: 3}
-  timeBoostParticles: {fileID: 19814690, guid: cd4d7020429cde74db076ffa72495419, type: 3}
-  boostParticle: {fileID: 2239964174075591110}
-  slowParticles: {fileID: 53674575}
-  fastParticles: {fileID: 6519085506817559029}
-  goalSound: {fileID: 8300000, guid: 6f1637b41d770415d9d1e6a33a1db4c8, type: 3}
-  pickupSound: {fileID: 8300000, guid: f928159802e324af2b95417fa6ce3fdf, type: 3}
-  explosionSound: {fileID: 8300000, guid: fc96116dc3c141440aabb5605744fea2, type: 3}
-  boostSound: {fileID: 8300000, guid: 5ee9b372006be4e5f98d18462ad078d8, type: 3}
 --- !u!1 &6519085506817559029
 GameObject:
   m_ObjectHideFlags: 0
