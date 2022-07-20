@@ -34,7 +34,7 @@ namespace Niantic.ARDKExamples.Helpers
     public GameObject PlacementObjectPf;
 
     /// A list of placed game objects to be destroyed in the OnDestroy method.
-    private List<GameObject> _placedObjects = new List<GameObject>();
+    public List<GameObject> _placedObjects = new List<GameObject>();
 
     /// Internal reference to the session, used to get the current frame to hit test against.
     private IARSession _session;

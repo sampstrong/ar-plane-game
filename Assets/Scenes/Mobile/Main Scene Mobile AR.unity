@@ -326,10 +326,11 @@ GameObject:
   - component: {fileID: 133557965}
   - component: {fileID: 133557964}
   - component: {fileID: 133557970}
-  - component: {fileID: 133557969}
   - component: {fileID: 133557971}
+  - component: {fileID: 133557972}
+  - component: {fileID: 133557973}
   m_Layer: 0
-  m_Name: SceneManager
+  m_Name: ARSceneManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -436,20 +437,6 @@ MonoBehaviour:
   Failure:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &133557969
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 133557962}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a4762429022e4cc0b1b99fd1d2ecf137, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Camera: {fileID: 963194227}
-  CursorObject: {fileID: 2696613509544265455, guid: 5bbe9186dd5c048bd9265cec07eb2bac, type: 3}
 --- !u!114 &133557970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -474,12 +461,44 @@ MonoBehaviour:
   m_GameObject: {fileID: 133557962}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5d8a8e9516824c94b2d03616bc4f105c, type: 3}
+  m_Script: {fileID: 11500000, guid: 0d48271ab5a5e4ea3b864a472acd57f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Camera: {fileID: 963194227}
-  HitTestType: -1
-  PlacementObjectPf: {fileID: 8945280146300842657, guid: e8edec3549af145d1aaf8ed0f5ec421f, type: 3}
+  CursorObject: {fileID: 2696613509544265455, guid: 5bbe9186dd5c048bd9265cec07eb2bac, type: 3}
+  spawnedCursorObject: {fileID: 0}
+  _placementObject: {fileID: 8945280146300842657, guid: e8edec3549af145d1aaf8ed0f5ec421f, type: 3}
+--- !u!114 &133557972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 133557962}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4762429022e4cc0b1b99fd1d2ecf137, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 963194227}
+  CursorObject: {fileID: 2696613509544265455, guid: 5bbe9186dd5c048bd9265cec07eb2bac, type: 3}
+  spawnedCursorObject: {fileID: 0}
+--- !u!114 &133557973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 133557962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d8a8e9516824c94b2d03616bc4f105c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Camera: {fileID: 0}
+  HitTestType: 16
+  PlacementObjectPf: {fileID: 0}
+  _placedObjects: []
 --- !u!1 &179749351
 GameObject:
   m_ObjectHideFlags: 0

@@ -30,10 +30,8 @@ public class PlayerController : MonoBehaviour
     
     private Quaternion baseRotation;
     private Quaternion currentRotation;
-
-    //set desired banking angles when for player
-    private Quaternion rotationRight = Quaternion.Euler(0, 0, -30);
-    private Quaternion rotationLeft = Quaternion.Euler(0, 0, 30);
+    private Quaternion rotationRight;
+    private Quaternion rotationLeft;
 
     private SphereCollider powerUpCollider;
     private GameManager gameManager;
@@ -61,13 +59,15 @@ public class PlayerController : MonoBehaviour
     private bool touchUsed = false;
     private bool arrowsUsed = false;
     
-    private float _mobileMultiplier = 0.01f;
+    private float _mobileMultiplier = 0.02f;
 
     // Start is called before the first frame update
     void Start()
     {
-        //initialize player rotation as flat - used as a reference to return back to flat when there is no player input
+        //initialize player rotations based on world position
         baseRotation = transform.rotation;
+        rotationRight = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, -30);
+        rotationLeft = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, 30);
 
         //initialize game over as false to start game
         gameOver = false;
@@ -128,6 +128,7 @@ public class PlayerController : MonoBehaviour
     //will need to update to get touch input and use change in x position to use on phone with AR
     void MovePlayer()
     {
+        horizontalInput = Input.GetAxis("Horizontal");
         float currentHorizontalInput = horizontalInput;
         float horizontalInputMultiplier = 37.5f;
         
@@ -164,7 +165,7 @@ public class PlayerController : MonoBehaviour
                     }
                 
                     //move player left and right based on touch input from center of screen
-                    transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * horizontalSpeed, Space.World);
+                    transform.Translate(transform.right * horizontalInput * Time.deltaTime * horizontalSpeed, Space.World);
                 
                     //limits player movement on x and y axes
                     transform.localPosition = new Vector3(Mathf.Clamp(transform.localPosition.x, -xRange, xRange), yPosition, transform.localPosition.z);
@@ -182,8 +183,8 @@ public class PlayerController : MonoBehaviour
                 
                 
                 //move player left and right
-                horizontalInput = Input.GetAxis("Horizontal");
-                transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * horizontalSpeed, Space.World);
+                
+                transform.Translate(transform.right * horizontalInput * Time.deltaTime * horizontalSpeed, Space.World);
 
                 //limits player movement on x and y axes
                 transform.localPosition = new Vector3(Mathf.Clamp(transform.localPosition.x, -xRange, xRange), yPosition, transform.localPosition.z);
@@ -195,7 +196,8 @@ public class PlayerController : MonoBehaviour
     //bank player rotation based on arrow input
     private void RotatePlayer()
     {
-
+        
+        
         if (!gameOver)
         {
             //sets current rotation

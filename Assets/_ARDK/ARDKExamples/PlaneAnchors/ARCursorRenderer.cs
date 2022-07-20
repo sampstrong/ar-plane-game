@@ -25,7 +25,7 @@ namespace Niantic.ARDKExamples.Helpers
     public GameObject CursorObject;
 
     /// A reference to the spawned cursor in the center of the screen.
-    private GameObject _spawnedCursorObject;
+    [HideInInspector] public GameObject spawnedCursorObject;
 
     private IARSession _session;
 
@@ -47,11 +47,11 @@ namespace Niantic.ARDKExamples.Helpers
 
     private void DestroySpawnedCursor()
     {
-      if (_spawnedCursorObject == null)
+      if (spawnedCursorObject == null)
         return;
 
-      Destroy(_spawnedCursorObject);
-      _spawnedCursorObject = null;
+      Destroy(spawnedCursorObject);
+      spawnedCursorObject = null;
     }
 
     private void _SessionInitialized(AnyARSessionInitializedArgs args)
@@ -71,7 +71,7 @@ namespace Niantic.ARDKExamples.Helpers
       DestroySpawnedCursor();
     }
 
-    private void _FrameUpdated(FrameUpdatedArgs args)
+    protected virtual void _FrameUpdated(FrameUpdatedArgs args)
     {
       var camera = Camera;
       if (camera == null)
@@ -99,20 +99,20 @@ namespace Niantic.ARDKExamples.Helpers
       if (hitTestResults.Count == 0)
         return;
 
-      if (_spawnedCursorObject == null)
-        _spawnedCursorObject = Instantiate(CursorObject, Vector2.one, Quaternion.identity);
+      if (spawnedCursorObject == null)
+        spawnedCursorObject = Instantiate(CursorObject, Vector2.one, Quaternion.identity);
 
       // Set the cursor object to the hit test result's position
-      _spawnedCursorObject.transform.position = hitTestResults[0].WorldTransform.ToPosition();
+      spawnedCursorObject.transform.position = hitTestResults[0].WorldTransform.ToPosition();
 
       // Orient the cursor object to look at the user, but remain flat on the "ground", aka
       // only rotate about the y-axis
-      _spawnedCursorObject.transform.LookAt
+      spawnedCursorObject.transform.LookAt
       (
         new Vector3
         (
           frame.Camera.Transform[0, 3],
-          _spawnedCursorObject.transform.position.y,
+          spawnedCursorObject.transform.position.y,
           frame.Camera.Transform[2, 3]
         )
       );
