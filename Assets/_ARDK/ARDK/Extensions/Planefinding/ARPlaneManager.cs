@@ -32,7 +32,7 @@ namespace Niantic.ARDK.Extensions
     // Used to track when the Inspector-public _detectedPlaneTypes is changed in OnValidate
     private PlaneDetection _prevDetectedPlaneTypes;
 
-    private readonly Dictionary<Guid, GameObject> _planeLookup = new Dictionary<Guid, GameObject>();
+    public readonly Dictionary<Guid, GameObject> _planeLookup = new Dictionary<Guid, GameObject>();
 
     /// If this is null no plane prefabs will be created.
     /// If this changes after planes have already been discovered existing instances won't be

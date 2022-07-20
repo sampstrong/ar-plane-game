@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Niantic.ARDK.AR.ARSessionEventArgs;
 using Niantic.ARDK.AR.HitTest;
+using Niantic.ARDK.Extensions;
 using Niantic.ARDK.Utilities;
 using Niantic.ARDK.Utilities.Input.Legacy;
 using Niantic.ARDKExamples.Helpers;
@@ -10,7 +11,8 @@ using UnityEngine;
 public class ARCustomPlacement : ARCursorRenderer
 {
     [SerializeField] private GameObject _placementObject;
-    
+    [SerializeField] private ARPlaneManager _arPlaneManager;
+    [SerializeField] private Material _shadowMaterial;
     
     private bool _objectIsPlaced = false;
     private Vector3 _placementRotation;
@@ -45,6 +47,8 @@ public class ARCustomPlacement : ARCursorRenderer
         {
             PlaceObject();
             _objectIsPlaced = true;
+            spawnedCursorObject.SetActive(false);
+            SwitchToShadows();
         }
 
     }
@@ -53,51 +57,15 @@ public class ARCustomPlacement : ARCursorRenderer
     {
         Instantiate(_placementObject, spawnedCursorObject.transform.position, Quaternion.Euler(_placementRotation));
     }
-    
-    protected override void _FrameUpdated(FrameUpdatedArgs args)
+
+    private void SwitchToShadows()
     {
-        var camera = Camera;
-        if (camera == null)
-            return;
-
-        var viewportWidth = camera.pixelWidth;
-        var viewportHeight = camera.pixelHeight;
-
-        // Hit testing for cursor in the middle of the screen
-        var middle = new Vector2(viewportWidth / 2f, viewportHeight / 2f);
-
-        var frame = args.Frame;
-        // Perform a hit test and either estimate a horizontal plane, or use an existing plane and its
-        // extents!
-        var hitTestResults =
-            frame.HitTest
-            (
-                viewportWidth,
-                viewportHeight,
-                middle,
-                ARHitTestResultType.ExistingPlaneUsingExtent |
-                ARHitTestResultType.EstimatedHorizontalPlane
-            );
-
-        if (hitTestResults.Count == 0)
-            return;
-
-        if (spawnedCursorObject == null)
-            spawnedCursorObject = Instantiate(CursorObject, Vector2.one, Quaternion.identity);
-
-        // Set the cursor object to the hit test result's position
-        spawnedCursorObject.transform.position = hitTestResults[0].WorldTransform.ToPosition();
-
-        // Orient the cursor object to look at the user, but remain flat on the "ground", aka
-        // only rotate about the y-axis
-        spawnedCursorObject.transform.LookAt
-        (
-            new Vector3
-            (
-                frame.Camera.Transform[0, 3],
-                spawnedCursorObject.transform.position.y,
-                frame.Camera.Transform[2, 3]
-            )
-        );
+        foreach (GameObject plane in _arPlaneManager._planeLookup.Values)
+        {
+            Renderer renderer = plane.GetComponentInChildren<MeshRenderer>();
+            renderer.material = _shadowMaterial;
+        }
     }
+    
+    
 }

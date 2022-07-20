@@ -71,7 +71,7 @@ namespace Niantic.ARDKExamples.Helpers
       DestroySpawnedCursor();
     }
 
-    protected virtual void _FrameUpdated(FrameUpdatedArgs args)
+    private void _FrameUpdated(FrameUpdatedArgs args)
     {
       var camera = Camera;
       if (camera == null)
