@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SpawnManager : MonoBehaviour
 {
@@ -62,6 +63,8 @@ public class SpawnManager : MonoBehaviour
         cloudSpawnDelay = 1.0f;
         cloudSpawnInterval = Random.Range(1.0f, 2.0f);
 
+        
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR")) return;
         //repeat spawning based on methods below and variables for spawn delay and interval above
         InvokeRepeating("SpawnEnemy", enemySpawnDelay, enemySpawnInterval);
         InvokeRepeating("SpawnGoal", goalSpawnDelay, goalSpawnInterval);
@@ -79,6 +82,8 @@ public class SpawnManager : MonoBehaviour
     //if the game isn't over, instantiate an enemy prefab and play the associated one shot sound
     void SpawnEnemy()
     {
+        
+        
         float enemyRandX = Random.Range(-spawnRange, spawnRange);
         Vector3 enemySpawnPos = new Vector3(enemyRandX, ySpawn, zSpawn);
 

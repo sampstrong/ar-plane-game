@@ -60,11 +60,13 @@ public class PlayerController : MonoBehaviour
     private bool rightInput = false;
     private bool touchUsed = false;
     private bool arrowsUsed = false;
+    
+    private float _mobileMultiplier = 0.01f;
 
     // Start is called before the first frame update
     void Start()
     {
-        //initialize player roatation as flat - used as a reference to return back to flat when there is no player input
+        //initialize player rotation as flat - used as a reference to return back to flat when there is no player input
         baseRotation = transform.rotation;
 
         //initialize game over as false to start game
@@ -103,6 +105,13 @@ public class PlayerController : MonoBehaviour
 
         //get spawn manager as reference
         spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+
+        
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR"))
+        {
+            horizontalSpeed *= _mobileMultiplier;
+        }
+        
     }
 
     //update player movement  & location
@@ -124,38 +133,46 @@ public class PlayerController : MonoBehaviour
         
         if (!gameOver)
         {
-            if (Input.touchCount > 0) //mobile input system used
+            if (SystemInfo.deviceType == DeviceType.Handheld) //mobile input system used
             {
-                touchUsed = true;
-                Touch touch = Input.GetTouch(0);
-
-                float posXFromCenter = (touch.position.x - 540) / 540;
-
-                float horizontalInput;
-
-                if (posXFromCenter > 0.1f)
+                if (Input.touchCount > 0) 
                 {
-                    horizontalInput = Mathf.Lerp(currentHorizontalInput, 1, Time.deltaTime * horizontalInputMultiplier);
-                    rightInput = true;
-                    leftInput = false;
-                }
-                else if (posXFromCenter < -0.1f)
-                {
-                    horizontalInput = Mathf.Lerp(currentHorizontalInput, -1, Time.deltaTime * horizontalInputMultiplier);
-                    leftInput = true;
-                    rightInput = false;
-                }
-                else
-                {
-                    horizontalInput = 0;
-                    rightInput = false;
-                    leftInput = false;
-                }
+                    touchUsed = true;
+                    Touch touch = Input.GetTouch(0);
+
+                    float posXFromCenter = (touch.position.x - 540) / 540;
+
+                    float horizontalInput;
+
+                    if (posXFromCenter > 0.1f)
+                    {
+                        horizontalInput = Mathf.Lerp(currentHorizontalInput, 1, Time.deltaTime * horizontalInputMultiplier);
+                        rightInput = true;
+                        leftInput = false;
+                    }
+                    else if (posXFromCenter < -0.1f)
+                    {
+                        horizontalInput = Mathf.Lerp(currentHorizontalInput, -1, Time.deltaTime * horizontalInputMultiplier);
+                        leftInput = true;
+                        rightInput = false;
+                    }
+                    else
+                    {
+                        horizontalInput = 0;
+                        rightInput = false;
+                        leftInput = false;
+                    }
                 
-                //move player left and right based on touch input from center of screen
-                transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * horizontalSpeed, Space.World);
+                    //move player left and right based on touch input from center of screen
+                    transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * horizontalSpeed, Space.World);
                 
+                    //limits player movement on x and y axes
+                    transform.localPosition = new Vector3(Mathf.Clamp(transform.localPosition.x, -xRange, xRange), yPosition, transform.localPosition.z);
+                
+                }
             }
+            
+            
             else //desktop input system used
             {
                 if (Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.LeftArrow))
@@ -169,7 +186,7 @@ public class PlayerController : MonoBehaviour
                 transform.Translate(Vector3.right * horizontalInput * Time.deltaTime * horizontalSpeed, Space.World);
 
                 //limits player movement on x and y axes
-                transform.position = new Vector3(Mathf.Clamp(transform.position.x, -xRange, xRange), yPosition, transform.position.z);
+                transform.localPosition = new Vector3(Mathf.Clamp(transform.localPosition.x, -xRange, xRange), yPosition, transform.localPosition.z);
             }
             
         }
