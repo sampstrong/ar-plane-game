@@ -25,7 +25,7 @@ namespace Niantic.ARDKExamples.Helpers
     public GameObject CursorObject;
 
     /// A reference to the spawned cursor in the center of the screen.
-    [HideInInspector] public GameObject spawnedCursorObject;
+    [HideInInspector] public GameObject spawnedCursorObject = null;
 
     private IARSession _session;
 

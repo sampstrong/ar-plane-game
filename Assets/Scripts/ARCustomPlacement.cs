@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Niantic.ARDK.AR.ARSessionEventArgs;
@@ -8,64 +9,91 @@ using Niantic.ARDK.Utilities.Input.Legacy;
 using Niantic.ARDKExamples.Helpers;
 using UnityEngine;
 
-public class ARCustomPlacement : ARCursorRenderer
+[RequireComponent(typeof(ARPlaneManager))]
+[RequireComponent(typeof(ARCursorRenderer))]
+public class ARCustomPlacement : MonoBehaviour
 {
     [SerializeField] private GameObject _placementObject;
-    [SerializeField] private ARPlaneManager _arPlaneManager;
     [SerializeField] private Material _shadowMaterial;
     
+    private ARPlaneManager _ARPlaneManager;
+    private ARCursorRenderer _ARCursorRenderer;
+
+    private GameObject placedObject;
     private bool _objectIsPlaced = false;
     private Vector3 _placementRotation;
-    
+
+    private PlanefindingGrid[] _planesInScene;
+
+    private void Start()
+    {
+        _ARPlaneManager = GetComponent<ARPlaneManager>();
+        _ARCursorRenderer = GetComponent<ARCursorRenderer>();
+    }
 
     // Update is called once per frame
     void Update()
     {
-        _placementRotation = new Vector3(0, Camera.transform.eulerAngles.y, 0);
+        _placementRotation = new Vector3(0, _ARCursorRenderer.Camera.transform.eulerAngles.y, 0);
         
-        /*
-        if (Input.touchCount > 0) //added code
-        {
-            
-            Touch touch = Input.GetTouch(0);
-
-            if (touch.phase == TouchPhase.Began)
-            {
-                PlaceObject();
-            }
-        }
-
-        else if (Input.GetMouseButton(0)) //for mock scene debugging
-        {
-            PlaceObject();
-        }
-        */
-
         if (_objectIsPlaced) return;
         if (PlatformAgnosticInput.touchCount <= 0) return;
         if (PlatformAgnosticInput.touchCount > 0)
         {
             PlaceObject();
-            _objectIsPlaced = true;
-            spawnedCursorObject.SetActive(false);
+            _ARCursorRenderer.spawnedCursorObject.SetActive(false);
             SwitchToShadows();
+            _ARPlaneManager.enabled = false;
+            RemoveExtraPlanes();
         }
 
     }
     
     private void PlaceObject()
     {
-        Instantiate(_placementObject, spawnedCursorObject.transform.position, Quaternion.Euler(_placementRotation));
+        placedObject = Instantiate(_placementObject, _ARCursorRenderer.spawnedCursorObject.transform.position, Quaternion.Euler(_placementRotation));
+        _objectIsPlaced = true;
     }
 
     private void SwitchToShadows()
     {
-        foreach (GameObject plane in _arPlaneManager._planeLookup.Values)
+        foreach (GameObject plane in _ARPlaneManager._planeLookup.Values)
         {
             Renderer renderer = plane.GetComponentInChildren<MeshRenderer>();
             renderer.material = _shadowMaterial;
         }
     }
+
+    private void RemoveExtraPlanes()
+    {
+        _planesInScene = FindObjectsOfType<PlanefindingGrid>();
+        float shortestDistance = float.PositiveInfinity;
+        GameObject closestPlane = _planesInScene[0].gameObject;
+
+        foreach (PlanefindingGrid plane in _planesInScene) // find closest plane
+        {
+            float distance = Vector3.Distance(plane.transform.position, placedObject.transform.position);
+            
+            if (distance < shortestDistance)
+            {
+                closestPlane = plane.gameObject;
+                shortestDistance = distance;
+            }
+        }
+        
+        Debug.Log($"Closest Plane: {closestPlane.gameObject.name}");
+        
+        foreach (PlanefindingGrid plane in _planesInScene) // remove other planes from scene
+        {
+            if (plane.gameObject == closestPlane) continue;
+            
+            Destroy(plane.gameObject);
+            
+            Debug.Log($"Plane: {plane.gameObject.name} was destroyed");
+        }
+    }
+
+   
     
     
 }

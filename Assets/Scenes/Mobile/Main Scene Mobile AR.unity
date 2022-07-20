@@ -326,6 +326,7 @@ GameObject:
   - component: {fileID: 133557965}
   - component: {fileID: 133557964}
   - component: {fileID: 133557970}
+  - component: {fileID: 133557972}
   - component: {fileID: 133557971}
   m_Layer: 0
   m_Name: ARSceneManager
@@ -382,7 +383,7 @@ MonoBehaviour:
   _keyFrameFrequency: 20
   _interpolation: 2
   _interpolationPreference: 0.9
-  _occlusionMode: 3
+  _occlusionMode: 0
   _textureFilterMode: 0
 --- !u!114 &133557966
 MonoBehaviour:
@@ -462,12 +463,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d48271ab5a5e4ea3b864a472acd57f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _placementObject: {fileID: 8945280146300842657, guid: e8edec3549af145d1aaf8ed0f5ec421f, type: 3}
+  _shadowMaterial: {fileID: 2100000, guid: 9c6e180894ee34c7fa415fa0a6c5baf8, type: 2}
+--- !u!114 &133557972
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 133557962}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a4762429022e4cc0b1b99fd1d2ecf137, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   Camera: {fileID: 963194227}
   CursorObject: {fileID: 2696613509544265455, guid: 5bbe9186dd5c048bd9265cec07eb2bac, type: 3}
   spawnedCursorObject: {fileID: 0}
-  _placementObject: {fileID: 8945280146300842657, guid: e8edec3549af145d1aaf8ed0f5ec421f, type: 3}
-  _arPlaneManager: {fileID: 133557970}
-  _shadowMaterial: {fileID: 2100000, guid: 9c6e180894ee34c7fa415fa0a6c5baf8, type: 2}
 --- !u!1 &179749351
 GameObject:
   m_ObjectHideFlags: 0
