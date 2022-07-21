@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
 
     public TMP_InputField playerNameInputField;
 
-    public Canvas gameOverScreen;
+    [SerializeField] private Canvas gameOverScreen;
     public Canvas scoreAndTime;
 
     [SerializeField] private Canvas _ARStartCanvas;
@@ -45,26 +45,24 @@ public class GameManager : MonoBehaviour
 
     public float mobileMultiplier = 0.02f;
     public UnityEvent onStartGame;
+    public UnityEvent onRestart;
 
     void Start()
     {
         //initialize score and timer
-        score = 0;
-        timeLeft = 30;
+        InitializeNumbers();
 
-        
+
         //get components from main scene when loaded
         if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile"))
         {
             scoreText = GameObject.Find("Score Text").GetComponent<Text>();
             timerText = GameObject.Find("Timer Text").GetComponent<Text>();
             finalScoreText = GameObject.Find("Final Score Text").GetComponent<Text>();
-            playerController = GameObject.Find("Player").GetComponent<PlayerController>();
+            
 
             highScoreGameOver = GameObject.Find("Game Over High Score Text").GetComponent<Text>();
-
-            gameOverScreen = GameObject.Find("Game Over Canvas").GetComponent<Canvas>();
-            gameOverScreen.enabled = false;
+            
 
             scoreAndTime = GameObject.Find("Score and Time Canvas").GetComponent<Canvas>();
             scoreAndTime.enabled = true;
@@ -77,18 +75,24 @@ public class GameManager : MonoBehaviour
         }
         
         // Unity Event Subscriptions
-        onStartGame.AddListener(ToggleARStartGameCanvas);
         _ARCustomPlacement.onObjectPlaced.AddListener(ToggleARStartGameCanvas);
+        
+        onStartGame.AddListener(ToggleARStartGameCanvas);
+        onStartGame.AddListener(ToggleScoreAndTime);
+        
+        onRestart.AddListener(InitializeNumbers);
+        onRestart.AddListener(ToggleGameOverScreen);
     }
 
     
+
+
     void Update()
     {
         //start timer if main scene is loaded and change to game over screen when game ends
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile"))
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR"))
         {
             UpdateTimer();
-            UpdateUI();
         }
 
         //update the high score and display it
@@ -124,10 +128,29 @@ public class GameManager : MonoBehaviour
     {
         onStartGame.Invoke();
         
+        playerController = FindObjectOfType<PlayerController>();
+        
+        Debug.Log($"Player Controller is on {playerController.gameObject.name}");
+        
+        playerController.onGameOver.AddListener(ToggleGameOverScreen);
+        playerController.onGameOver.AddListener(ToggleScoreAndTime);
+        playerController.onGameOver.AddListener(EventTest);
+    }
+
+    private void EventTest()
+    {
+        Debug.Log("Event is working");
+    }
+
+    public void RestartGame()
+    {
+        playerController.gameObject.SetActive(true);
+        onRestart.Invoke();
     }
 
     private void ToggleARStartGameCanvas()
     {
+        Debug.Log("Start Game Canvas Toggled");
         if (_ARStartCanvas.gameObject.activeInHierarchy)
         {
             _ARStartCanvas.gameObject.SetActive(false);
@@ -137,6 +160,7 @@ public class GameManager : MonoBehaviour
             _ARStartCanvas.gameObject.SetActive(true);
         }
     }
+
     
 
     public void ShowKeyboard()
@@ -152,6 +176,12 @@ public class GameManager : MonoBehaviour
         Debug.Log(playerName);
     }
 
+    private void InitializeNumbers()
+    {
+        score = 0;
+        timeLeft = 30;
+    }
+    
     //add points to score and update score text during game and at game end
     public void UpdateScore()
     {
@@ -235,21 +265,30 @@ public class GameManager : MonoBehaviour
     }
 
     //Controls UI in main scene
-    private void UpdateUI()
-    {
-        //shows score and timer during game and hides game over screen
-        if(!playerController.gameOver)
-        {
-            scoreAndTime.enabled = true;
-            gameOverScreen.enabled = false;
-        }
+    
 
-        //hides score and time when game is over and shows game over screen
+    private void ToggleGameOverScreen()
+    {
+        Debug.Log("Game Over Canvas Toggled");
+        if (gameOverScreen.gameObject.activeInHierarchy)
+        {
+            gameOverScreen.gameObject.SetActive(false);
+        }
         else
         {
-            scoreAndTime.enabled = false;
-            gameOverScreen.enabled = true;
-            Debug.Log(gameOverScreen.enabled);
+            gameOverScreen.gameObject.SetActive(true);
+        }
+    }
+
+    private void ToggleScoreAndTime()
+    {
+        if (scoreAndTime.gameObject.activeInHierarchy)
+        {
+            scoreAndTime.gameObject.SetActive(false);
+        }
+        else
+        {
+            scoreAndTime.gameObject.SetActive(true);
         }
     }
 

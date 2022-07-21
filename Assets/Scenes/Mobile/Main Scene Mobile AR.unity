@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &310469
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -253,6 +253,10 @@ PrefabInstance:
       propertyPath: gameOverScreen
       value: 
       objectReference: {fileID: 1032929281}
+    - target: {fileID: 1137743979624285844, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
+      propertyPath: _ARRestartCanvas
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 1137743979624285844, guid: f133159828bdb4094b8b0aba9c454d5c, type: 3}
       propertyPath: mobileMultiplier
       value: 0.02
@@ -3572,7 +3576,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: 05a81c3d5091440058129444d28322f3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: LoadMainScene
+      value: RestartGame
       objectReference: {fileID: 0}
     - target: {fileID: 11400004, guid: 05a81c3d5091440058129444d28322f3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName

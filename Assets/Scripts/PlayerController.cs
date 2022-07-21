@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
@@ -60,12 +61,18 @@ public class PlayerController : MonoBehaviour
     private bool rightInput = false;
     private bool touchUsed = false;
     private bool arrowsUsed = false;
-    
 
+    private Vector3 _basePosition;
+
+    public UnityEvent onGameOver;
 
     // Start is called before the first frame update
     void Start()
     {
+        // Unity Event Subscriptions
+        onGameOver.AddListener(EndGame);
+        
+        
         //initialize player rotations based on world position
         baseRotation = transform.rotation;
         rotationRight = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, -30);
@@ -117,12 +124,18 @@ public class PlayerController : MonoBehaviour
         
         // Unity Event Subscriptions
         gameManager.onStartGame.AddListener(StartGame);
+        gameManager.onRestart.AddListener(StartGame);
         
+        _basePosition = transform.position;
     }
 
     private void StartGame()
     {
+        gameObject.SetActive(true);
         gameOver = false;
+        transform.position = _basePosition;
+        
+        slowParticles.GetComponent<ParticleSystem>().Play();
     }
 
     //update player movement  & location
@@ -323,9 +336,10 @@ public class PlayerController : MonoBehaviour
             
             if (!powerUpActive)
             {
-                Destroy(gameObject);
+                onGameOver.Invoke();
+                gameObject.SetActive(false);
                 Destroy(other.gameObject);
-                EndGame();
+                
                 
             }
             else
@@ -452,7 +466,7 @@ public class PlayerController : MonoBehaviour
         gameOver = true;
         Debug.Log($"game over: {gameOver}");
 
-        DataHandler.Instance.SaveHighScore();
+        
 
         if(powerUpActive)
         {
@@ -468,6 +482,9 @@ public class PlayerController : MonoBehaviour
         {
             fastParticles.GetComponent<ParticleSystem>().Pause();
         }
+
+        if (!DataHandler.Instance) return;
+        DataHandler.Instance.SaveHighScore();
     }
 }
 

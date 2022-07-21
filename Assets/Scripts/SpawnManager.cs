@@ -49,14 +49,16 @@ public class SpawnManager : MonoBehaviour
         
         // Unity Event Subscriptions
         _gameManager.onStartGame.AddListener(StartSpawning);
+        _gameManager.onRestart.AddListener(DestroySpawnedObjects);
+        _gameManager.onRestart.AddListener(StartSpawning);
 
         //initialize spawn delay time
         //initialize spawn interval (in start because it will come up with new values each game)
         //maybe spawn interval should go in update to continually change?
-        enemySpawnDelay = 1.0f;
+        enemySpawnDelay = 1.5f;
         enemySpawnInterval = Random.Range(0.5f, 1.2f);
 
-        goalSpawnDelay = 0.0f;
+        goalSpawnDelay = 0.5f;
         goalSpawnInterval = Random.Range(0.3f, 0.7f);
 
         powerupSpawnDelay = 5.0f;
@@ -84,9 +86,13 @@ public class SpawnManager : MonoBehaviour
         Debug.Log("Normal Spawn Rate Active");
     }
 
+   
+
     private void StartSpawning()
     {
+        Debug.Log("Start Spawning Invoked");
         _playerController = FindObjectOfType<PlayerController>();
+        Debug.Log($"Player controller gameobject : {_playerController.gameObject.name}");
         _gamePlacement = _ARCustomPlacement.placedObject.transform;
         
         InvokeRepeating("SpawnEnemy", enemySpawnDelay, enemySpawnInterval);
@@ -99,6 +105,7 @@ public class SpawnManager : MonoBehaviour
     //if the game isn't over, instantiate an enemy prefab and play the associated one shot sound
     void SpawnEnemy()
     {
+        Debug.Log("Enemy Spawned");
         float enemyRandX = Random.Range(-spawnRange, spawnRange);
         Vector3 enemySpawnPos = _gamePlacement.TransformPoint(enemyRandX, ySpawn, zSpawn);
         Quaternion enemySpawnRot = Quaternion.Euler(_gamePlacement.eulerAngles + new Vector3(0, 0, -90));
@@ -214,4 +221,15 @@ public class SpawnManager : MonoBehaviour
         Debug.Log("Normal Spawn Rate Active");
     }
 
+
+    private void DestroySpawnedObjects()
+    {
+        CancelInvoke();
+        MoveTowardsPlayer[] spawnedObjects = FindObjectsOfType<MoveTowardsPlayer>();
+
+        foreach (MoveTowardsPlayer spawnedObject in spawnedObjects)
+        {
+            Destroy(spawnedObject.gameObject);
+        }
+    }
 }
