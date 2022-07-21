@@ -18,7 +18,10 @@ public class SpawnManager : MonoBehaviour
     private float cloudYSpawn = 0.0f;
     private float spawnPowerUpMultiplier = 2.5f;
 
-    private PlayerController playerController;
+    private PlayerController _playerController;
+    [SerializeField] private GameManager _gameManager;
+    [SerializeField] private ARCustomPlacement _ARCustomPlacement;
+    private Transform _gamePlacement;
 
     float enemySpawnDelay;
     float enemySpawnInterval;
@@ -42,8 +45,10 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //get player controller reference
-        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
+        
+        
+        // Unity Event Subscriptions
+        _gameManager.onStartGame.AddListener(StartSpawning);
 
         //initialize spawn delay time
         //initialize spawn interval (in start because it will come up with new values each game)
@@ -64,6 +69,10 @@ public class SpawnManager : MonoBehaviour
         cloudSpawnInterval = Random.Range(1.0f, 2.0f);
 
         
+
+        //reference audio player for enemy sound FX
+        enemyAudioPlayer = GameObject.Find("Enemy Sound FX Player").GetComponent<AudioSource>();
+        
         if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR")) return;
         //repeat spawning based on methods below and variables for spawn delay and interval above
         InvokeRepeating("SpawnEnemy", enemySpawnDelay, enemySpawnInterval);
@@ -73,23 +82,33 @@ public class SpawnManager : MonoBehaviour
         InvokeRepeating("SpawnCloud", cloudSpawnDelay, cloudSpawnInterval);
 
         Debug.Log("Normal Spawn Rate Active");
+    }
 
-        //reference audio player for enemy sound FX
-        enemyAudioPlayer = GameObject.Find("Enemy Sound FX Player").GetComponent<AudioSource>();
+    private void StartSpawning()
+    {
+        _playerController = FindObjectOfType<PlayerController>();
+        _gamePlacement = _ARCustomPlacement.placedObject.transform;
+        
+        InvokeRepeating("SpawnEnemy", enemySpawnDelay, enemySpawnInterval);
+        //InvokeRepeating("SpawnGoal", goalSpawnDelay, goalSpawnInterval);
+        //InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, powerupSpawnInterval);
+        //InvokeRepeating("SpawnTimeBoost", timeBoostSpawnDelay, timeBoostSpawnInterval);
     }
 
     //define a random spawn position on x axis for each time enemy is spawned
     //if the game isn't over, instantiate an enemy prefab and play the associated one shot sound
     void SpawnEnemy()
     {
-        
-        
         float enemyRandX = Random.Range(-spawnRange, spawnRange);
-        Vector3 enemySpawnPos = new Vector3(enemyRandX, ySpawn, zSpawn);
+        Vector3 enemySpawnPos = _gamePlacement.TransformPoint(enemyRandX, ySpawn, zSpawn);
+        Quaternion enemySpawnRot = Quaternion.Euler(_gamePlacement.eulerAngles + new Vector3(0, 0, -90));
 
-        if (playerController.gameOver == false)
+        if (_playerController.gameOver == false)
         {
-            Instantiate(enemyPrefab, enemySpawnPos, enemyPrefab.transform.rotation);
+            GameObject enemy = Instantiate(enemyPrefab, enemySpawnPos, enemySpawnRot);
+            enemy.transform.localScale *= _gameManager.mobileMultiplier;
+            enemy.transform.parent = _gamePlacement;
+            
             enemyAudioPlayer.PlayOneShot(missileLaunchSound);
         }
     }
@@ -99,11 +118,14 @@ public class SpawnManager : MonoBehaviour
     void SpawnGoal()
     {
         float goalRandX = Random.Range(-spawnRange, spawnRange);
-        Vector3 goalSpawnPos = new Vector3(goalRandX, ySpawn, zSpawn);
+        Vector3 goalSpawnPos = _gamePlacement.TransformPoint(goalRandX, ySpawn, zSpawn);
+        Quaternion goalSpawnRot = Quaternion.Euler(_gamePlacement.eulerAngles + new Vector3(0, 0, 0));
 
-        if(playerController.gameOver == false)
+        if(_playerController.gameOver == false)
         {
-            Instantiate(goalPrefab, goalSpawnPos, goalPrefab.transform.rotation);
+            GameObject goal = Instantiate(goalPrefab, goalSpawnPos, goalSpawnRot);
+            goal.transform.localScale *= _gameManager.mobileMultiplier;
+            goal.transform.parent = _gamePlacement;
         }
     }
 
@@ -114,9 +136,10 @@ public class SpawnManager : MonoBehaviour
         float powerupRandX = Random.Range(-spawnRange, spawnRange);
         Vector3 powerupSpawnPos = new Vector3(powerupRandX, ySpawn, zSpawn);
 
-        if(playerController.gameOver == false)
+        if(_playerController.gameOver == false)
         {
-            Instantiate(powerupPrefab, powerupSpawnPos, powerupPrefab.transform.rotation);
+            GameObject powerUp = Instantiate(powerupPrefab, powerupSpawnPos, powerupPrefab.transform.rotation);
+            powerUp.transform.localScale *= _gameManager.mobileMultiplier;
         }
     }
 
@@ -127,9 +150,10 @@ public class SpawnManager : MonoBehaviour
         float timeBoostRandX = Random.Range(-spawnRange, spawnRange);
         Vector3 timeBoostSpawnPos = new Vector3(timeBoostRandX, ySpawn, zSpawn);
 
-        if (playerController.gameOver == false)
+        if (_playerController.gameOver == false)
         {
-            Instantiate(timeBoostPrefab, timeBoostSpawnPos, timeBoostPrefab.transform.rotation);
+            GameObject timeBoost = Instantiate(timeBoostPrefab, timeBoostSpawnPos, timeBoostPrefab.transform.rotation);
+            timeBoost.transform.localScale *= _gameManager.mobileMultiplier;
         }
     }
 
@@ -143,7 +167,7 @@ public class SpawnManager : MonoBehaviour
 
         int randCloudIndex = Random.Range(0, 4);
 
-        if (playerController.gameOver == false)
+        if (_playerController.gameOver == false)
         {
             Instantiate(cloudPrefab[randCloudIndex], cloudSpawnPos, cloudPrefab[randCloudIndex].transform.rotation);
         }

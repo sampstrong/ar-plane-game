@@ -33,6 +33,8 @@ public class PlayerController : MonoBehaviour
     private Quaternion rotationRight;
     private Quaternion rotationLeft;
 
+
+    private Transform _gamePlacement;
     private SphereCollider powerUpCollider;
     private GameManager gameManager;
     private GameObject forceField;
@@ -59,7 +61,7 @@ public class PlayerController : MonoBehaviour
     private bool touchUsed = false;
     private bool arrowsUsed = false;
     
-    private float _mobileMultiplier = 0.02f;
+
 
     // Start is called before the first frame update
     void Start()
@@ -70,12 +72,13 @@ public class PlayerController : MonoBehaviour
         rotationLeft = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, 30);
 
         //initialize game over as false to start game
-        gameOver = false;
+        gameOver = true;
 
         //initialize power up state
         powerUpActive = false;
 
         //get power up components and set them to not be active at game start
+        _gamePlacement = FindObjectOfType<ARCustomPlacement>().placedObject.transform;
         powerUpCollider = GetComponent<SphereCollider>();
         powerUpCollider.enabled = false;
         forceField = GameObject.Find("Force Field");
@@ -109,9 +112,17 @@ public class PlayerController : MonoBehaviour
         
         if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR"))
         {
-            horizontalSpeed *= _mobileMultiplier;
+            horizontalSpeed *= gameManager.mobileMultiplier;
         }
         
+        // Unity Event Subscriptions
+        gameManager.onStartGame.AddListener(StartGame);
+        
+    }
+
+    private void StartGame()
+    {
+        gameOver = false;
     }
 
     //update player movement  & location
@@ -235,7 +246,8 @@ public class PlayerController : MonoBehaviour
          */
         if (other.gameObject.CompareTag("Goal"))
         {
-            Instantiate(goalParticles, other.transform.position, Quaternion.identity);
+            ParticleSystem particles = Instantiate(goalParticles, other.transform.position, Quaternion.identity);
+            particles.transform.parent = _gamePlacement;
             
             Destroy(other.gameObject);
             goalParticles.Play();
@@ -253,7 +265,8 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("PowerUp"))
         {
             Destroy(other.gameObject);
-            Instantiate(powerUpParticles, other.transform.position, Quaternion.identity);
+            ParticleSystem particles = Instantiate(powerUpParticles, other.transform.position, Quaternion.identity);
+            particles.transform.parent = _gamePlacement;
             powerUpParticles.Play();
             
             powerUpActive = true;
@@ -277,7 +290,8 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("TimeBoost"))
         {
             Destroy(other.gameObject);
-            Instantiate(timeBoostParticles, other.transform.position, Quaternion.identity);
+            ParticleSystem particles = Instantiate(timeBoostParticles, other.transform.position, Quaternion.identity);
+            particles.transform.parent = _gamePlacement;
             timeBoostParticles.Play();
 
 
@@ -295,7 +309,9 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Enemy"))
         {
             loudAudioPlayer.PlayOneShot(explosionSound);
-            Instantiate(enemyParticles, other.transform.position, Quaternion.identity);
+            ParticleSystem particles = Instantiate(enemyParticles, other.transform.position, Quaternion.identity);
+            particles.transform.localScale *= gameManager.mobileMultiplier;
+            particles.transform.parent = _gamePlacement;
             
             if (!powerUpActive)
             {

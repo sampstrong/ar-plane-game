@@ -8,6 +8,7 @@ using Niantic.ARDK.Utilities;
 using Niantic.ARDK.Utilities.Input.Legacy;
 using Niantic.ARDKExamples.Helpers;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(ARPlaneManager))]
 [RequireComponent(typeof(ARCursorRenderer))]
@@ -19,16 +20,23 @@ public class ARCustomPlacement : MonoBehaviour
     private ARPlaneManager _ARPlaneManager;
     private ARCursorRenderer _ARCursorRenderer;
 
-    private GameObject placedObject;
+    
     private bool _objectIsPlaced = false;
     private Vector3 _placementRotation;
 
     private PlanefindingGrid[] _planesInScene;
 
+    public GameObject placedObject;
+    
+    public UnityEvent onObjectPlaced;
+
     private void Start()
     {
         _ARPlaneManager = GetComponent<ARPlaneManager>();
         _ARCursorRenderer = GetComponent<ARCursorRenderer>();
+        
+        onObjectPlaced.AddListener(SwitchToShadows);
+        onObjectPlaced.AddListener(RemoveExtraPlanes);
     }
 
     // Update is called once per frame
@@ -41,10 +49,9 @@ public class ARCustomPlacement : MonoBehaviour
         if (PlatformAgnosticInput.touchCount > 0)
         {
             PlaceObject();
+            
             _ARCursorRenderer.spawnedCursorObject.SetActive(false);
-            SwitchToShadows();
             _ARPlaneManager.enabled = false;
-            RemoveExtraPlanes();
         }
 
     }
@@ -53,6 +60,7 @@ public class ARCustomPlacement : MonoBehaviour
     {
         placedObject = Instantiate(_placementObject, _ARCursorRenderer.spawnedCursorObject.transform.position, Quaternion.Euler(_placementRotation));
         _objectIsPlaced = true;
+        onObjectPlaced.Invoke();
     }
 
     private void SwitchToShadows()

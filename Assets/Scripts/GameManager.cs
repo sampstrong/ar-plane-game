@@ -6,6 +6,8 @@ using TMPro;
 using System;
 using UnityEngine.UI;
 using System.IO;
+using Niantic.ARDK.Extensions;
+using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
@@ -35,6 +37,14 @@ public class GameManager : MonoBehaviour
     public Canvas gameOverScreen;
     public Canvas scoreAndTime;
 
+    [SerializeField] private Canvas _ARStartCanvas;
+    [SerializeField] private ARCustomPlacement _ARCustomPlacement;
+
+    private PlayerController _playerController;
+
+
+    public float mobileMultiplier = 0.02f;
+    public UnityEvent onStartGame;
 
     void Start()
     {
@@ -65,6 +75,10 @@ public class GameManager : MonoBehaviour
         {
             highScoreStartScreen = GameObject.Find("Start High Score Text").GetComponent<Text>();
         }
+        
+        // Unity Event Subscriptions
+        onStartGame.AddListener(ToggleARStartGameCanvas);
+        _ARCustomPlacement.onObjectPlaced.AddListener(ToggleARStartGameCanvas);
     }
 
     
@@ -105,6 +119,25 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene(2);
     }
+
+    public void StartGame()
+    {
+        onStartGame.Invoke();
+        
+    }
+
+    private void ToggleARStartGameCanvas()
+    {
+        if (_ARStartCanvas.gameObject.activeInHierarchy)
+        {
+            _ARStartCanvas.gameObject.SetActive(false);
+        }
+        else
+        {
+            _ARStartCanvas.gameObject.SetActive(true);
+        }
+    }
+    
 
     public void ShowKeyboard()
     {
