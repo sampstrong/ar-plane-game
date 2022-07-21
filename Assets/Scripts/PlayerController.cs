@@ -246,8 +246,11 @@ public class PlayerController : MonoBehaviour
          */
         if (other.gameObject.CompareTag("Goal"))
         {
-            ParticleSystem particles = Instantiate(goalParticles, other.transform.position, Quaternion.identity);
+            Quaternion particleRot = _gamePlacement.rotation;
+            ParticleSystem particles = Instantiate(goalParticles, other.transform.position, _gamePlacement.rotation);
+            particles.transform.localScale *= gameManager.mobileMultiplier;
             particles.transform.parent = _gamePlacement;
+            
             
             Destroy(other.gameObject);
             goalParticles.Play();
@@ -265,9 +268,11 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("PowerUp"))
         {
             Destroy(other.gameObject);
-            ParticleSystem particles = Instantiate(powerUpParticles, other.transform.position, Quaternion.identity);
+            Quaternion particleRot = _gamePlacement.rotation;
+            ParticleSystem particles = Instantiate(powerUpParticles, other.transform.position, particleRot);
+            particles.transform.localScale *= gameManager.mobileMultiplier;
             particles.transform.parent = _gamePlacement;
-            powerUpParticles.Play();
+            particles.Play();
             
             powerUpActive = true;
             spawnManager.IncreaseSpawnRate();
@@ -290,9 +295,11 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("TimeBoost"))
         {
             Destroy(other.gameObject);
-            ParticleSystem particles = Instantiate(timeBoostParticles, other.transform.position, Quaternion.identity);
+            Quaternion particleRot = _gamePlacement.rotation;
+            ParticleSystem particles = Instantiate(timeBoostParticles, other.transform.position, particleRot);
+            particles.transform.localScale *= gameManager.mobileMultiplier;
             particles.transform.parent = _gamePlacement;
-            timeBoostParticles.Play();
+            particles.Play();
 
 
             gameManager.AddTime();
@@ -309,7 +316,8 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Enemy"))
         {
             loudAudioPlayer.PlayOneShot(explosionSound);
-            ParticleSystem particles = Instantiate(enemyParticles, other.transform.position, Quaternion.identity);
+            Quaternion particleRot = _gamePlacement.rotation;
+            ParticleSystem particles = Instantiate(enemyParticles, other.transform.position, particleRot);
             particles.transform.localScale *= gameManager.mobileMultiplier;
             particles.transform.parent = _gamePlacement;
             
@@ -326,7 +334,7 @@ public class PlayerController : MonoBehaviour
                 Destroy(other.gameObject);
             }
 
-            enemyParticles.Play();
+            particles.Play();
         }
     }
 

@@ -45,6 +45,11 @@ public class MoveTowardsPlayer : MonoBehaviour
             {
                 speed = 55.0f;
             }
+            
+            if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR"))
+            {
+                speed *= _gameManager.mobileMultiplier;
+            }
         }
 
         //destroy objects if their position is less than the zDestory variable
@@ -68,8 +73,6 @@ public class MoveTowardsPlayer : MonoBehaviour
     //move objects forward based on speed variable and time passed
     public void Move()
     {
-        
-        
         transform.Translate(Vector3.forward * Time.deltaTime * -speed, Space.Self);
     }
     

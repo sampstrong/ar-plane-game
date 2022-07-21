@@ -90,9 +90,9 @@ public class SpawnManager : MonoBehaviour
         _gamePlacement = _ARCustomPlacement.placedObject.transform;
         
         InvokeRepeating("SpawnEnemy", enemySpawnDelay, enemySpawnInterval);
-        //InvokeRepeating("SpawnGoal", goalSpawnDelay, goalSpawnInterval);
-        //InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, powerupSpawnInterval);
-        //InvokeRepeating("SpawnTimeBoost", timeBoostSpawnDelay, timeBoostSpawnInterval);
+        InvokeRepeating("SpawnGoal", goalSpawnDelay, goalSpawnInterval);
+        InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, powerupSpawnInterval);
+        InvokeRepeating("SpawnTimeBoost", timeBoostSpawnDelay, timeBoostSpawnInterval);
     }
 
     //define a random spawn position on x axis for each time enemy is spawned
@@ -134,12 +134,14 @@ public class SpawnManager : MonoBehaviour
     void SpawnPowerUp()
     {
         float powerupRandX = Random.Range(-spawnRange, spawnRange);
-        Vector3 powerupSpawnPos = new Vector3(powerupRandX, ySpawn, zSpawn);
+        Vector3 powerupSpawnPos = _gamePlacement.TransformPoint(powerupRandX, ySpawn, zSpawn);
+        Quaternion powerupSpawnRot = Quaternion.Euler(_gamePlacement.eulerAngles + new Vector3(0, 0, 0));
 
         if(_playerController.gameOver == false)
         {
-            GameObject powerUp = Instantiate(powerupPrefab, powerupSpawnPos, powerupPrefab.transform.rotation);
+            GameObject powerUp = Instantiate(powerupPrefab, powerupSpawnPos, powerupSpawnRot);
             powerUp.transform.localScale *= _gameManager.mobileMultiplier;
+            powerUp.transform.parent = _gamePlacement;
         }
     }
 
@@ -148,12 +150,15 @@ public class SpawnManager : MonoBehaviour
     void SpawnTimeBoost()
     {
         float timeBoostRandX = Random.Range(-spawnRange, spawnRange);
-        Vector3 timeBoostSpawnPos = new Vector3(timeBoostRandX, ySpawn, zSpawn);
+        Vector3 timeBoostSpawnPos = _gamePlacement.TransformPoint(timeBoostRandX, ySpawn, zSpawn);
+        Quaternion timeBoostSpawnRot = Quaternion.Euler(_gamePlacement.eulerAngles + new Vector3(0, 0, 0));
 
         if (_playerController.gameOver == false)
         {
-            GameObject timeBoost = Instantiate(timeBoostPrefab, timeBoostSpawnPos, timeBoostPrefab.transform.rotation);
+            GameObject timeBoost = Instantiate(timeBoostPrefab, timeBoostSpawnPos, timeBoostSpawnRot);
             timeBoost.transform.localScale *= _gameManager.mobileMultiplier;
+            timeBoost.transform.parent = _gamePlacement;
+            Debug.Log("TimeBoost Instantiated");
         }
     }
 
