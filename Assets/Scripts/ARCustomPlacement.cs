@@ -42,6 +42,8 @@ public class ARCustomPlacement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (!_ARCursorRenderer.spawnedCursorObject) return;
+        
         _placementRotation = new Vector3(0, _ARCursorRenderer.Camera.transform.eulerAngles.y, 0);
         
         if (_objectIsPlaced) return;
@@ -96,8 +98,6 @@ public class ARCustomPlacement : MonoBehaviour
             if (plane.gameObject == closestPlane) continue;
             
             Destroy(plane.gameObject);
-            
-            Debug.Log($"Plane: {plane.gameObject.name} was destroyed");
         }
     }
 

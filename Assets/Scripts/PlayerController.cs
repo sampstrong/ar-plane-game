@@ -69,17 +69,17 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Unity Event Subscriptions
-        onGameOver.AddListener(EndGame);
+        
         
         
         //initialize player rotations based on world position
+        _basePosition = transform.position;
         baseRotation = transform.rotation;
         rotationRight = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, -30);
         rotationLeft = Quaternion.Euler(transform.eulerAngles.x, transform.eulerAngles.y, 30);
 
         //initialize game over as false to start game
-        gameOver = true;
+        //gameOver = true;
 
         //initialize power up state
         powerUpActive = false;
@@ -126,14 +126,15 @@ public class PlayerController : MonoBehaviour
         gameManager.onStartGame.AddListener(StartGame);
         gameManager.onRestart.AddListener(StartGame);
         
-        _basePosition = transform.position;
+        
     }
 
     private void StartGame()
     {
         gameObject.SetActive(true);
-        gameOver = false;
+        //gameOver = false;
         transform.position = _basePosition;
+        transform.rotation = baseRotation;
         
         slowParticles.GetComponent<ParticleSystem>().Play();
     }
@@ -142,10 +143,10 @@ public class PlayerController : MonoBehaviour
     //update force field location to be the same as player
     void Update()
     {
+        if (gameManager.gameOver) return;
         MovePlayer();
         RotatePlayer();
         UpdateForceFieldLocation();
-        Debug.Log($"Game Over: {gameOver}");
     }
 
     //Use arrow keys to move the player left and right
@@ -156,7 +157,7 @@ public class PlayerController : MonoBehaviour
         float currentHorizontalInput = horizontalInput;
         float horizontalInputMultiplier = 37.5f;
         
-        if (!gameOver)
+        if (!gameManager.gameOver)
         {
             if (SystemInfo.deviceType == DeviceType.Handheld) //mobile input system used
             {
@@ -195,8 +196,9 @@ public class PlayerController : MonoBehaviour
                     transform.localPosition = new Vector3(Mathf.Clamp(transform.localPosition.x, -xRange, xRange), yPosition, transform.localPosition.z);
                 
                 }
+                
+               
             }
-            
             
             else //desktop input system used
             {
@@ -213,6 +215,7 @@ public class PlayerController : MonoBehaviour
                 //limits player movement on x and y axes
                 transform.localPosition = new Vector3(Mathf.Clamp(transform.localPosition.x, -xRange, xRange), yPosition, transform.localPosition.z);
             }
+           
             
         }
     }
@@ -222,7 +225,7 @@ public class PlayerController : MonoBehaviour
     {
         
         
-        if (!gameOver)
+        if (!gameManager.gameOver)
         {
             //sets current rotation
             currentRotation = transform.rotation;
@@ -336,15 +339,13 @@ public class PlayerController : MonoBehaviour
             
             if (!powerUpActive)
             {
-                onGameOver.Invoke();
+                EndGame();
                 gameObject.SetActive(false);
                 Destroy(other.gameObject);
-                
-                
             }
             else
             {
-                //enemyParticles.transform.position = other.transform.position;
+                
                 Destroy(other.gameObject);
             }
 
@@ -462,9 +463,10 @@ public class PlayerController : MonoBehaviour
     //pauses star particles
     public void EndGame()
     {
+        onGameOver.Invoke();
         Debug.Log("game ended");
-        gameOver = true;
-        Debug.Log($"game over: {gameOver}");
+        gameManager.gameOver = true;
+        Debug.Log($"game over: {gameManager.gameOver}");
 
         
 
@@ -482,8 +484,7 @@ public class PlayerController : MonoBehaviour
         {
             fastParticles.GetComponent<ParticleSystem>().Pause();
         }
-
-        if (!DataHandler.Instance) return;
+        
         DataHandler.Instance.SaveHighScore();
     }
 }

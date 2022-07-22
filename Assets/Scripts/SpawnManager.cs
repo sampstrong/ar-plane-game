@@ -81,9 +81,11 @@ public class SpawnManager : MonoBehaviour
         InvokeRepeating("SpawnGoal", goalSpawnDelay, goalSpawnInterval);
         InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, powerupSpawnInterval);
         InvokeRepeating("SpawnTimeBoost", timeBoostSpawnDelay, timeBoostSpawnInterval);
-        InvokeRepeating("SpawnCloud", cloudSpawnDelay, cloudSpawnInterval);
-
+        
         Debug.Log("Normal Spawn Rate Active");
+        
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR")) return;
+        InvokeRepeating("SpawnCloud", cloudSpawnDelay, cloudSpawnInterval);
     }
 
    
@@ -110,7 +112,7 @@ public class SpawnManager : MonoBehaviour
         Vector3 enemySpawnPos = _gamePlacement.TransformPoint(enemyRandX, ySpawn, zSpawn);
         Quaternion enemySpawnRot = Quaternion.Euler(_gamePlacement.eulerAngles + new Vector3(0, 0, -90));
 
-        if (_playerController.gameOver == false)
+        if (_gameManager.gameOver == false)
         {
             GameObject enemy = Instantiate(enemyPrefab, enemySpawnPos, enemySpawnRot);
             enemy.transform.localScale *= _gameManager.mobileMultiplier;
@@ -128,7 +130,7 @@ public class SpawnManager : MonoBehaviour
         Vector3 goalSpawnPos = _gamePlacement.TransformPoint(goalRandX, ySpawn, zSpawn);
         Quaternion goalSpawnRot = Quaternion.Euler(_gamePlacement.eulerAngles + new Vector3(0, 0, 0));
 
-        if(_playerController.gameOver == false)
+        if(_gameManager.gameOver == false)
         {
             GameObject goal = Instantiate(goalPrefab, goalSpawnPos, goalSpawnRot);
             goal.transform.localScale *= _gameManager.mobileMultiplier;
@@ -144,7 +146,7 @@ public class SpawnManager : MonoBehaviour
         Vector3 powerupSpawnPos = _gamePlacement.TransformPoint(powerupRandX, ySpawn, zSpawn);
         Quaternion powerupSpawnRot = Quaternion.Euler(_gamePlacement.eulerAngles + new Vector3(0, 0, 0));
 
-        if(_playerController.gameOver == false)
+        if(_gameManager.gameOver == false)
         {
             GameObject powerUp = Instantiate(powerupPrefab, powerupSpawnPos, powerupSpawnRot);
             powerUp.transform.localScale *= _gameManager.mobileMultiplier;
@@ -160,7 +162,7 @@ public class SpawnManager : MonoBehaviour
         Vector3 timeBoostSpawnPos = _gamePlacement.TransformPoint(timeBoostRandX, ySpawn, zSpawn);
         Quaternion timeBoostSpawnRot = Quaternion.Euler(_gamePlacement.eulerAngles + new Vector3(0, 0, 0));
 
-        if (_playerController.gameOver == false)
+        if (_gameManager.gameOver == false)
         {
             GameObject timeBoost = Instantiate(timeBoostPrefab, timeBoostSpawnPos, timeBoostSpawnRot);
             timeBoost.transform.localScale *= _gameManager.mobileMultiplier;
@@ -179,7 +181,7 @@ public class SpawnManager : MonoBehaviour
 
         int randCloudIndex = Random.Range(0, 4);
 
-        if (_playerController.gameOver == false)
+        if (_gameManager.gameOver == false)
         {
             Instantiate(cloudPrefab[randCloudIndex], cloudSpawnPos, cloudPrefab[randCloudIndex].transform.rotation);
         }
@@ -199,6 +201,8 @@ public class SpawnManager : MonoBehaviour
         InvokeRepeating("SpawnGoal", goalSpawnDelay, (goalSpawnInterval / spawnPowerUpMultiplier));
         InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, (powerupSpawnInterval));
         InvokeRepeating("SpawnTimeBoost", timeBoostSpawnDelay, (timeBoostSpawnInterval));
+        
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR")) return;
         InvokeRepeating("SpawnCloud", cloudSpawnDelay, (cloudSpawnInterval / spawnPowerUpMultiplier));
 
         Debug.Log("Increased Spawn Rate Active");
@@ -216,6 +220,8 @@ public class SpawnManager : MonoBehaviour
         InvokeRepeating("SpawnGoal", goalSpawnDelay, goalSpawnInterval);
         InvokeRepeating("SpawnPowerUp", powerupSpawnDelay, powerupSpawnInterval);
         InvokeRepeating("SpawnTimeBoost", timeBoostSpawnDelay, timeBoostSpawnInterval);
+        
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR")) return;
         InvokeRepeating("SpawnCloud", cloudSpawnDelay, cloudSpawnInterval);
 
         Debug.Log("Normal Spawn Rate Active");

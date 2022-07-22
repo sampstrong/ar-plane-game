@@ -6,111 +6,98 @@ using TMPro;
 using System;
 using UnityEngine.UI;
 using System.IO;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Niantic.ARDK.Extensions;
 using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
-    public Color whiteTimerColor;
-    public Color redTimerColor;
-
-    public string playerName;
+    //public string highScorePlayerName;
+    //public int highScore;
+    
+    
+    // Game Mechanics
+    [HideInInspector] public float mobileMultiplier = 0.02f;
+    [HideInInspector] public string playerName;
+    [HideInInspector] public bool gameOver = true;
     private int score;
-
-    public string highScorePlayerName;
-    public int highScore;
-
     private float timeLeft;
     private float warningTime = 10.0f;
     private float timeToAdd = 10.0f;
+    
 
-    private Text scoreText;
-    private Text timerText;
-    private Text finalScoreText;
-    private Text highScoreGameOver;
-    public Text highScoreStartScreen;
+    [Header("Main Scene UI")]
+    [SerializeField] private Text scoreText;
+    [SerializeField] private Text timerText;
+    [SerializeField] private Text finalScoreText;
+    [SerializeField] private Text highScoreGameOver;
+    [SerializeField] private Canvas gameOverScreen;
+    [SerializeField] private Canvas _ARStartCanvas;
+    public Canvas scoreAndTime;
+    
+    private Color whiteTimerColor = Color.white;
+    private Color redTimerColor = Color.red;
 
-    private PlayerController playerController;
-
+    [Header("Start Screen UI")]
+    [SerializeField] private Text highScoreStartScreen;
     public TMP_InputField playerNameInputField;
 
-    [SerializeField] private Canvas gameOverScreen;
-    public Canvas scoreAndTime;
-
-    [SerializeField] private Canvas _ARStartCanvas;
+    [Header("Component References")]
     [SerializeField] private ARCustomPlacement _ARCustomPlacement;
+    private PlayerController playerController;
 
-    private PlayerController _playerController;
-
-
-    public float mobileMultiplier = 0.02f;
+    [Header("Events")]
     public UnityEvent onStartGame;
     public UnityEvent onRestart;
 
     void Start()
     {
-        //initialize score and timer
-        InitializeNumbers();
-
-
-        //get components from main scene when loaded
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile"))
-        {
-            scoreText = GameObject.Find("Score Text").GetComponent<Text>();
-            timerText = GameObject.Find("Timer Text").GetComponent<Text>();
-            finalScoreText = GameObject.Find("Final Score Text").GetComponent<Text>();
-            
-
-            highScoreGameOver = GameObject.Find("Game Over High Score Text").GetComponent<Text>();
-            
-
-            scoreAndTime = GameObject.Find("Score and Time Canvas").GetComponent<Canvas>();
-            scoreAndTime.enabled = true;
-        }
+        DisplayHighScore();
 
         //get components from start screen when loaded
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen Mobile"))
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen Mobile AR"))
         {
             highScoreStartScreen = GameObject.Find("Start High Score Text").GetComponent<Text>();
         }
         
         // Unity Event Subscriptions
+        if (!_ARCustomPlacement) return;
         _ARCustomPlacement.onObjectPlaced.AddListener(ToggleARStartGameCanvas);
         
+        onStartGame.AddListener(InitializeNumbers);
         onStartGame.AddListener(ToggleARStartGameCanvas);
         onStartGame.AddListener(ToggleScoreAndTime);
         
         onRestart.AddListener(InitializeNumbers);
         onRestart.AddListener(ToggleGameOverScreen);
+        onRestart.AddListener(ToggleScoreAndTime);
+        
+        
+        gameOver = true;
     }
 
     
-
-
     void Update()
     {
-        //start timer if main scene is loaded and change to game over screen when game ends
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR"))
-        {
-            UpdateTimer();
-        }
+        Debug.Log($"High Score: {DataHandler.Instance.highScore}");
+        Debug.Log($"Game Over: {gameOver}");
+        if (timerText == null) return;
+        if (gameOver) return;
+        UpdateTimer();
+        
+        
 
         //update the high score and display it
         SetHighScore();
         DisplayHighScore();
     }
 
-    //load main scene (for button functionality in starting or restarting game)
+    // load main scene (for button functionality in starting or restarting game)
     public void LoadMainScene()
     {
         SceneManager.LoadScene(1);
     }
     
-    //load main screen for mobile
-    public void LoadMainSceneMobile()
-    {
-        SceneManager.LoadScene(3);
-    }
 
     //load title screen for desktop (for button functionality in starting or restarting game)
     public void LoadTitleScreen()
@@ -118,23 +105,27 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(0);
     }
     
-    //load title screen for mobile
-    public void LoadTitleScreenMobile()
-    {
-        SceneManager.LoadScene(2);
-    }
 
     public void StartGame()
     {
         onStartGame.Invoke();
+        gameOver = false;
         
         playerController = FindObjectOfType<PlayerController>();
+        playerController.onGameOver.AddListener(EndGame);
         
         Debug.Log($"Player Controller is on {playerController.gameObject.name}");
         
         playerController.onGameOver.AddListener(ToggleGameOverScreen);
         playerController.onGameOver.AddListener(ToggleScoreAndTime);
         playerController.onGameOver.AddListener(EventTest);
+        playerController.onGameOver.AddListener(SetHighScore);
+        playerController.onGameOver.AddListener(DisplayHighScore);
+    }
+
+    private void EndGame()
+    {
+        gameOver = true;
     }
 
     private void EventTest()
@@ -146,6 +137,7 @@ public class GameManager : MonoBehaviour
     {
         playerController.gameObject.SetActive(true);
         onRestart.Invoke();
+        gameOver = false;
     }
 
     private void ToggleARStartGameCanvas()
@@ -178,8 +170,11 @@ public class GameManager : MonoBehaviour
 
     private void InitializeNumbers()
     {
-        score = 0;
         timeLeft = 30;
+        timerText.text = $"{(int)(timeLeft)}";
+        
+        score = 0;
+        scoreText.text = $"{score}";
     }
     
     //add points to score and update score text during game and at game end
@@ -206,22 +201,25 @@ public class GameManager : MonoBehaviour
     //store player name associated with new high score
     void SetHighScore()
     {
+        
+        Debug.Log("Data Handler Found");
         if (score > DataHandler.Instance.highScore)
         {
             DataHandler.Instance.highScore = score;
             DataHandler.Instance.highScorePlayerName = playerName;
+            Debug.Log("New High Score Set");
         }
     }
 
     //updates text display of high score value and high score player on start screen and main scene
     private void DisplayHighScore()
     {
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen Mobile"))
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Start Screen Mobile AR"))
         {
             highScoreStartScreen.text = $"HIGH SCORE : {DataHandler.Instance.highScorePlayerName} - {DataHandler.Instance.highScore}";
         }
 
-        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile"))
+        if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene") || SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR"))
         {
             highScoreGameOver.text = $"HIGH SCORE : {DataHandler.Instance.highScorePlayerName} - {DataHandler.Instance.highScore}";
         }
@@ -230,14 +228,11 @@ public class GameManager : MonoBehaviour
     
     private void UpdateTimer()
     {
-        Debug.Log($"Game manager game is over: {playerController.gameOver}");
+        
         //counts down time in seconds when game is not over
-        if(!playerController.gameOver)
-        {
-            timeLeft -= Time.deltaTime;
-            timerText.text = $"{(int)(timeLeft)}";
-            Debug.Log(timeLeft);
-        }
+        timeLeft -= Time.deltaTime;
+        timerText.text = $"{(int)(timeLeft)}";
+        
 
         //sets timer text color to red when time is below the warning time
         if (timeLeft < warningTime)
@@ -254,6 +249,7 @@ public class GameManager : MonoBehaviour
         //ends game when timer reaches zero
         if (timeLeft < 0)
         {
+            if (!playerController) return;
             playerController.EndGame();
         }
     }

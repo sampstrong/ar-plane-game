@@ -21,7 +21,7 @@ public class MoveTowardsPlayer : MonoBehaviour
     void Start()
     {
         //get the player controller script as a reference
-        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
+        
         _gameManager = FindObjectOfType<GameManager>();
         _gamePlacement = FindObjectOfType<ARCustomPlacement>().placedObject.transform;
         
@@ -29,28 +29,17 @@ public class MoveTowardsPlayer : MonoBehaviour
         {
             speed *= _gameManager.mobileMultiplier;
         }
+        
+        if (_gameManager.gameOver) return;
+        playerController = GameObject.Find("Player").GetComponent<PlayerController>();
     }
 
     
     void Update()
     {
         //sets an increased speed for objects when power up is active
-        if(playerController.powerUpActive)
-        {
-            if(gameObject.CompareTag("PowerUpParticles"))
-            {
-                speed = 10.0f;
-            }
-            else
-            {
-                speed = 55.0f;
-            }
-            
-            if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR"))
-            {
-                speed *= _gameManager.mobileMultiplier;
-            }
-        }
+        
+        IncreaseSpeedOnPowerUp();
 
         //destroy objects if their position is less than the zDestory variable
         
@@ -61,13 +50,34 @@ public class MoveTowardsPlayer : MonoBehaviour
         
 
         //set speed of objects to zer when game is over (essentially pause the game)
-        if (playerController.gameOver == true)
+        if (_gameManager.gameOver == true)
         {
             speed = 0;
         }
         
         //move all objects towards player
         Move();
+    }
+
+    private void IncreaseSpeedOnPowerUp()
+    {
+        if (!playerController) return;
+        if (playerController.powerUpActive)
+        {
+            if (gameObject.CompareTag("PowerUpParticles"))
+            {
+                speed = 10.0f;
+            }
+            else
+            {
+                speed = 55.0f;
+            }
+
+            if (SceneManager.GetActiveScene() == SceneManager.GetSceneByName("Main Scene Mobile AR"))
+            {
+                speed *= _gameManager.mobileMultiplier;
+            }
+        }
     }
 
     //move objects forward based on speed variable and time passed
